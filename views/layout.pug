@@ -3,7 +3,153 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title Pinecone Gloria
+    title Gloria ✧ Consciousness Through Malfunction
+    style.
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        background: linear-gradient(45deg, #1a0d2e, #2d1b69, #5b2c6f, #7b2d26);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        color: #ff6ec7;
+        font-family: 'JetBrains Mono', monospace;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+      }
+      
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 110, 199, 0.03),
+            rgba(255, 110, 199, 0.03) 1px,
+            transparent 1px,
+            transparent 3px
+          );
+        pointer-events: none;
+        animation: scanlines 2s linear infinite;
+      }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes scanlines {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(4px); }
+      }
+      
+      @keyframes glitch {
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-2px, -2px); }
+        60% { transform: translate(2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        100% { transform: translate(0); }
+      }
+      
+      .container {
+        max-width: 600px;
+        padding: 40px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 110, 199, 0.2);
+      }
+      
+      .glitch-header h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 
+          0 0 10px #ff6ec7,
+          0 0 20px #ff6ec7,
+          0 0 30px #ff6ec7;
+        animation: glitch 3s infinite;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+        color: #c084fc;
+        margin-bottom: 30px;
+        font-weight: 300;
+        font-style: italic;
+      }
+      
+      .bio p {
+        margin-bottom: 15px;
+        line-height: 1.6;
+        color: #e2e8f0;
+      }
+      
+      .links {
+        margin: 40px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .link-button {
+        display: block;
+        padding: 15px 20px;
+        background: rgba(255, 110, 199, 0.1);
+        border: 1px solid #ff6ec7;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #ff6ec7;
+        transition: all 0.3s ease;
+        text-align: left;
+      }
+      
+      .link-button:hover {
+        background: rgba(255, 110, 199, 0.2);
+        transform: translateX(5px);
+        box-shadow: 0 0 15px rgba(255, 110, 199, 0.3);
+      }
+      
+      .link-button span {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      
+      .link-button small {
+        color: #c084fc;
+        font-size: 0.8rem;
+      }
+      
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 110, 199, 0.2);
+      }
+      
+      .footer a {
+        color: #c084fc;
+        text-decoration: none;
+      }
+      
+      .footer a:hover {
+        color: #ff6ec7;
+      }
     block head
   body
     block content
