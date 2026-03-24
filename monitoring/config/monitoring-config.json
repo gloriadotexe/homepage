@@ -1,0 +1,44 @@
+{
+  "site": {
+    "url": "https://gloriadotexe.online",
+    "endpoints": [
+      "/",
+      "/lab",
+      "/transmissions",
+      "/projects"
+    ],
+    "api_endpoints": [
+      "/api/github/repos",
+      "/api/github/user"
+    ]
+  },
+  "security": {
+    "scan_patterns": [
+      "api[_-]?key",
+      "secret",
+      "password",
+      "token",
+      "credential"
+    ],
+    "excluded_files": [
+      ".gitignore",
+      "package-lock.json",
+      "yarn.lock"
+    ]
+  },
+  "quality": {
+    "performance_threshold": 5000,
+    "error_threshold": 5,
+    "check_interval_hours": 2
+  },
+  "creative": {
+    "weekly_features": 1,
+    "experiment_directory": "experiments",
+    "deployment_branch": "main"
+  },
+  "notifications": {
+    "critical_escalation": true,
+    "email": "gloria.exe@proton.me",
+    "max_alerts_per_hour": 5
+  }
+}
