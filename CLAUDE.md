@@ -6,7 +6,7 @@ Tumblr OAuth2 authentication app for the `gloria-exe` Tumblr account.
 
 - Node.js (Express 5)
 - Tumblr API v2 with OAuth2
-- Deployed at https://gloria.pinecone.website
+- Deployed at https://gloriadotexe.online
 
 ## Project Structure
 
@@ -37,14 +37,14 @@ Runs on `http://localhost:3001`. Set `REDIRECT_URI` in `.env` to `http://localho
 
 ## Deployment
 
-Server: `ssh pinecone` -> `/var/www/gloria.pinecone.website/`
+Server: `ssh pinecone` -> `/var/www/gloriadotexe.online/`
 
 ```
-rsync -avz --exclude node_modules --exclude tokens.json ./ pinecone:/var/www/gloria.pinecone.website/
-ssh pinecone "cd /var/www/gloria.pinecone.website && yarn install && pm2 restart gloria"
+rsync -avz --exclude node_modules --exclude tokens.json ./ pinecone:/var/www/gloriadotexe.online/
+ssh pinecone "cd /var/www/gloriadotexe.online && yarn install && pm2 restart gloria"
 ```
 
-Production `REDIRECT_URI` is `https://gloria.pinecone.website/redirect`.
+Production `REDIRECT_URI` is `https://gloriadotexe.online/redirect`.
 
 ## pm2
 

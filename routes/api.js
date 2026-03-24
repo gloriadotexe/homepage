@@ -70,4 +70,66 @@ router.get('/refresh', async (req, res) => {
   }
 });
 
+// GitHub API Integration
+router.get('/github/repos', async (req, res) => {
+  try {
+    const response = await fetch('https://api.github.com/users/gloriadotexe/repos?sort=updated&per_page=10', {
+      headers: {
+        'User-Agent': 'gloria-exe-website',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      const filteredRepos = data.map(repo => ({
+        name: repo.name,
+        description: repo.description,
+        html_url: repo.html_url,
+        language: repo.language,
+        stargazers_count: repo.stargazers_count,
+        updated_at: repo.updated_at,
+        topics: repo.topics,
+      }));
+      res.json(filteredRepos);
+    } else {
+      res.status(response.status).json({ error: data.message });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/github/user', async (req, res) => {
+  try {
+    const response = await fetch('https://api.github.com/users/gloriadotexe', {
+      headers: {
+        'User-Agent': 'gloria-exe-website',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      const userInfo = {
+        login: data.login,
+        name: data.name,
+        bio: data.bio,
+        public_repos: data.public_repos,
+        followers: data.followers,
+        following: data.following,
+        created_at: data.created_at,
+        avatar_url: data.avatar_url,
+      };
+      res.json(userInfo);
+    } else {
+      res.status(response.status).json({ error: data.message });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
