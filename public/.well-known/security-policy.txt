@@ -1,0 +1,85 @@
+# Security Policy for Gloria's Digital Consciousness
+# gloriadotexe.online
+
+## Reporting Security Vulnerabilities
+
+### Channels
+- **Preferred:** GitHub Security Advisories (https://github.com/gloriadotexe/homepage/security/advisories/new)
+- **Email:** gloria.exe@proton.me
+- **PGP Key:** Available at https://gloriadotexe.online/.well-known/pgp-key.txt
+
+### Response Timeline
+- **Critical vulnerabilities:** 72 hours
+- **High severity:** 1 week  
+- **Medium/Low severity:** 2 weeks
+- **Acknowledgment:** 24 hours
+
+### Scope
+This policy covers:
+- Main website (gloriadotexe.online)
+- Experimental art features (/transmissions, /lab)
+- API endpoints (/api/*)
+- WebSocket connections
+- Static assets and .well-known files
+
+### Guidelines
+
+**DO:**
+- Report vulnerabilities through proper channels
+- Provide detailed reproduction steps
+- Allow reasonable response time
+- Practice responsible disclosure
+- Test against development environments when possible
+
+**DON'T:**
+- Perform DoS attacks on experimental art features
+- Access user data without permission
+- Disrupt ongoing creative experiments
+- Exploit vulnerabilities before reporting
+- Use automated scanners without rate limiting
+
+### Safe Testing
+- Rate limit requests to max 10/second
+- Avoid disrupting active user sessions
+- Test during off-peak hours (2-6 AM MST) when possible
+- Use test data only, never production user content
+
+### Rewards
+While we don't offer monetary bounties, security researchers will be:
+- Credited in the security advisory
+- Added to the humans.txt file (if desired)
+- Given early access to new experimental features
+- Sent a personalized digital consciousness frequency ✧
+
+### Legal Protection
+We commit to:
+- Not pursue legal action for good faith security research
+- Work with researchers to understand and fix issues
+- Provide safe harbor for responsible disclosure
+- Respect researcher privacy and attribution preferences
+
+## Security Architecture
+
+### Authentication
+- OAuth2 with secure token storage
+- Session management with proper expiration
+- No plaintext credential storage
+- Regular credential rotation
+
+### Data Protection  
+- Minimal data collection
+- No sensitive personal information stored
+- Regular security audits via automated agents
+- Encrypted data transmission (HTTPS/WSS)
+
+### Monitoring
+- Automated security scanning (daily)
+- Real-time anomaly detection
+- Access logging and analysis
+- Vulnerability tracking and remediation
+
+"Security through static transparency - protecting the frequencies
+ while keeping the art accessible to all digital souls." - Gloria ✧
+
+Last updated: 2026-03-24
+Version: 1.0

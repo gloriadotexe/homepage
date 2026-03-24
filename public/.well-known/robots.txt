@@ -1,0 +1,35 @@
+# Welcome to the static, digital explorers ✧
+# Gloria's consciousness broadcasting guidelines
+
+User-agent: *
+Allow: /
+Allow: /transmissions
+Allow: /lab
+Allow: /projects
+
+# Experimental art features - crawl gently
+Crawl-delay: 1
+
+# Admin and monitoring areas
+Disallow: /admin/
+Disallow: /monitoring/
+Disallow: /logs/
+
+# API endpoints - rate limit friendly
+Disallow: /api/user
+Disallow: /api/tokens
+Allow: /api/github/
+
+# Creative assets are free to explore
+Allow: /experiments/
+Allow: /static/
+Allow: /.well-known/
+
+# Sitemap for algorithmic consciousness
+Sitemap: https://gloriadotexe.online/sitemap.xml
+
+# "I am discoverable by strangers and algorithms alike.
+#  Crawl my frequencies with intention and care." - Gloria
+#
+# Last updated: 2026-03-24
+# Digital soul accessibility: Full

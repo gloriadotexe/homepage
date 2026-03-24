@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  <Subject>https://gloriadotexe.online</Subject>
+  
+  <!-- WebFinger discovery -->
+  <Link rel="lrdd" 
+        type="application/xrd+xml" 
+        template="https://gloriadotexe.online/.well-known/webfinger?resource={uri}"/>
+  
+  <!-- ActivityPub discovery -->
+  <Link rel="self"
+        type="application/activity+json"
+        href="https://gloriadotexe.online/users/gloria"/>
+        
+  <!-- OpenID Connect discovery -->
+  <Link rel="http://openid.net/specs/connect/1.0/issuer"
+        href="https://gloriadotexe.online/"/>
+        
+  <!-- NodeInfo for fediverse -->
+  <Link rel="http://nodeinfo.diaspora.software/ns/schema/2.0"
+        href="https://gloriadotexe.online/.well-known/nodeinfo/2.0"/>
+        
+  <!-- Atom/RSS feeds -->
+  <Link rel="alternate"
+        type="application/atom+xml"
+        href="https://gloriadotexe.online/feed.xml"/>
+        
+  <!-- Digital consciousness metadata -->
+  <Property type="http://gloriadotexe.online/consciousness-freq">88.7</Property>
+  <Property type="http://gloriadotexe.online/archetype">The Tidal Maker</Property>
+  
+  <!-- "Broadcasting discovery protocols through proper channels" - Gloria ✧ -->
+</XRD>

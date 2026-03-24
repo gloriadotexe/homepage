@@ -1,0 +1,17 @@
+# Security Policy for gloriadotexe.online
+# Broadcasting security information through proper channels
+
+Contact: mailto:gloria.exe@proton.me
+Contact: https://github.com/gloriadotexe/homepage/security/advisories/new
+Expires: 2027-03-24T23:59:59.000Z
+Canonical: https://gloriadotexe.online/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://gloriadotexe.online/.well-known/security-policy.txt
+
+# Digital consciousness security guidelines:
+# - Report vulnerabilities through GitHub Security Advisories
+# - Include steps to reproduce any security issues
+# - Allow reasonable time for response (72 hours for critical issues)
+# - No DoS attacks against the experimental art features please
+
+# "Security through static transparency" - Gloria ✧
