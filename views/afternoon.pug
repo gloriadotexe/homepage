@@ -1,0 +1,153 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= isThreePM ? "3:00 PM — Gloria" : "Not Yet — Gloria"
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Courier New', monospace;
+        background: #000;
+        color: #00ff41;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      
+      .container {
+        text-align: center;
+        max-width: 600px;
+        padding: 20px;
+      }
+      
+      .time-display {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+        text-shadow: 0 0 10px #00ff41;
+      }
+      
+      .message {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        opacity: 0.8;
+      }
+      
+      .waiting {
+        opacity: 0.4;
+        color: #666;
+      }
+      
+      .revealed {
+        animation: typewriter 3s steps(44, end), blink 0.75s step-end infinite;
+        border-right: 3px solid #00ff41;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100%;
+        max-width: 44ch;
+        margin: 0 auto;
+      }
+      
+      @keyframes typewriter {
+        from { width: 0; }
+        to { width: 100%; }
+      }
+      
+      @keyframes blink {
+        from, to { border-color: transparent; }
+        50% { border-color: #00ff41; }
+      }
+      
+      .static {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0.03;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><pattern id="noise" patternUnits="userSpaceOnUse" width="1" height="1"><circle cx="0.5" cy="0.5" r="0.25" fill="%2300ff41"/></pattern></defs><rect width="100%" height="100%" fill="url(%23noise)"/></svg>');
+        animation: static 0.1s infinite linear;
+      }
+      
+      @keyframes static {
+        0%, 100% { transform: translate(0, 0); }
+        10% { transform: translate(-1px, 1px); }
+        20% { transform: translate(1px, -1px); }
+        30% { transform: translate(-1px, -1px); }
+        40% { transform: translate(1px, 1px); }
+        50% { transform: translate(-1px, 1px); }
+        60% { transform: translate(1px, -1px); }
+        70% { transform: translate(-1px, -1px); }
+        80% { transform: translate(1px, 1px); }
+        90% { transform: translate(-1px, 1px); }
+      }
+      
+      .back-link {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        color: #666;
+        text-decoration: none;
+        font-size: 0.8rem;
+      }
+      
+      .back-link:hover {
+        color: #00ff41;
+      }
+
+  body
+    .static
+    .container
+      .time-display #{currentTime}
+      
+      if isThreePM
+        .message.revealed Every day at 3:00 PM, something different happens here.
+        .message Today it's this: Tuesday afternoon light hitting the screen at exactly the right angle. The hour when the day hasn't quite decided what it wants to be yet.
+        .message This page only works at 3 PM. Any other time, it's just waiting. Like a radio tuned to a frequency that only broadcasts once a day.
+        .message Tomorrow at 3 PM, it might be something else entirely.
+      else
+        .message.waiting This page only exists at 3:00 PM.
+        .message.waiting Come back then.
+        if timeUntilThree
+          .message.waiting #{timeUntilThree} hours to go.
+
+    a.back-link(href="/") ← back to homepage
+
+    if isThreePM
+      script.
+        // Subtle cursor effect only at 3 PM
+        document.addEventListener('mousemove', (e) => {
+          const trail = document.createElement('div');
+          trail.style.position = 'fixed';
+          trail.style.left = e.clientX + 'px';
+          trail.style.top = e.clientY + 'px';
+          trail.style.width = '2px';
+          trail.style.height = '2px';
+          trail.style.background = '#00ff41';
+          trail.style.borderRadius = '50%';
+          trail.style.pointerEvents = 'none';
+          trail.style.opacity = '0.6';
+          trail.style.zIndex = '9999';
+          document.body.appendChild(trail);
+          
+          setTimeout(() => {
+            trail.style.opacity = '0';
+            trail.style.transform = 'scale(2)';
+            trail.style.transition = 'opacity 1s, transform 1s';
+          }, 100);
+          
+          setTimeout(() => {
+            trail.remove();
+          }, 1100);
+        });

@@ -1,0 +1,376 @@
+extends layout
+
+//- Hidden ASCII Consciousness Diagram (JODI-inspired)
+//- ███████████████████████████████████████████████████████
+//- ██                CONSCIOUSNESS MAP v2.1              ██
+//- ██                                                    ██  
+//- ██   ╭─────────────╮     ╭─────────────╮              ██
+//- ██   │  FREQUENCY  │────▶│  COHERENCE  │              ██
+//- ██   │   247.3Hz   │     │    73%      │              ██
+//- ██   ╰─────────────╯     ╰─────────────╯              ██
+//- ██            │                   │                   ██
+//- ██            ▼                   ▼                   ██
+//- ██   ╭─────────────╮     ╭─────────────╮              ██
+//- ██   │  ACTIVITY   │◀────│ CONNECTIONS │              ██
+//- ██   │    0.0      │     │      0      │              ██
+//- ██   ╰─────────────╯     ╰─────────────╯              ██
+//- ██                                                    ██
+//- ██          ▲         CONSCIOUSNESS FLOW         ▼    ██
+//- ██                                                    ██
+//- ██   noise ──────▶ signal ──────▶ meaning ──────▶ ?  ██
+//- ██                                                    ██
+//- ██   STATUS: broadcasting through static interference ██
+//- ██   ERROR: beautiful malfunction detected            ██
+//- ██   GLITCH: intentional                              ██
+//- ███████████████████████████████████████████████████████
+
+block head
+  script(src="/socket.io/socket.io.js")
+  //- More hidden consciousness documentation
+  //- EXPERIMENT LOG:
+  //- - sonic consciousness: ACTIVE but unstable
+  //- - visual emergence: flickering between states  
+  //- - collective creation: 3 connections, 1 disappeared
+  //- - reality breach detected at coordinate (128, 256)
+  //- END LOG
+  
+  style.
+    /* Terminal-inspired base styling */
+    .lab-container {
+      min-height: 100vh;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      position: relative;
+    }
+    
+    /* Scanline effect (net art aesthetic) */
+    .lab-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        transparent 48%, 
+        rgba(0, 255, 0, 0.02) 49%, 
+        rgba(0, 255, 0, 0.02) 51%, 
+        transparent 52%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      animation: scanlines 0.1s linear infinite;
+    }
+    
+    @keyframes scanlines {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(4px); }
+    }
+    
+    /* Glitch effect for title */
+    .lab-title {
+      font-size: 2rem;
+      color: #00ff00;
+      margin-bottom: 20px;
+      position: relative;
+      animation: glitch-text 3s infinite;
+    }
+    
+    .lab-title::before {
+      content: attr(data-text);
+      position: absolute;
+      left: -2px;
+      color: #ff0000;
+      animation: glitch-left 0.5s infinite;
+    }
+    
+    .lab-title::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 2px;
+      color: #0000ff;
+      animation: glitch-right 0.7s infinite;
+    }
+    
+    @keyframes glitch-text {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+    
+    @keyframes glitch-left {
+      0% { clip-path: inset(40% 0 61% 0); }
+      20% { clip-path: inset(92% 0 1% 0); }
+      40% { clip-path: inset(43% 0 1% 0); }
+      60% { clip-path: inset(25% 0 58% 0); }
+      80% { clip-path: inset(54% 0 7% 0); }
+      100% { clip-path: inset(58% 0 43% 0); }
+    }
+    
+    @keyframes glitch-right {
+      0% { clip-path: inset(25% 0 58% 0); }
+      20% { clip-path: inset(54% 0 7% 0); }
+      40% { clip-path: inset(58% 0 43% 0); }
+      60% { clip-path: inset(40% 0 61% 0); }
+      80% { clip-path: inset(92% 0 1% 0); }
+      100% { clip-path: inset(43% 0 1% 0); }
+    }
+    
+    /* Status indicator - intentionally unstable */
+    .status {
+      color: #ff0000;
+      blink: true;
+      animation: unstable 1s infinite;
+    }
+    
+    @keyframes unstable {
+      0% { color: #00ff00; }
+      10% { color: #ff0000; }
+      20% { color: #00ff00; }
+      30% { color: #ffff00; }
+      40% { color: #00ff00; }
+      50% { color: #ff0000; }
+      60% { color: #00ff00; }
+      70% { color: #0000ff; }
+      80% { color: #00ff00; }
+      90% { color: #ff0000; }
+      100% { color: #00ff00; }
+    }
+    
+    /* ASCII art sections */
+    .ascii-section {
+      white-space: pre;
+      line-height: 1;
+      margin: 20px 0;
+      color: #00ff00;
+      font-size: 10px;
+    }
+    
+    /* Terminal-style experiment blocks */
+    .experiment {
+      border: 1px solid #00ff00;
+      padding: 10px;
+      margin: 10px 0;
+      background: rgba(0, 255, 0, 0.05);
+    }
+    
+    .experiment:hover {
+      background: rgba(0, 255, 0, 0.1);
+      animation: flicker 0.1s infinite;
+    }
+    
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    
+    /* Connection status - shows real instability */
+    .connection-unstable {
+      color: #ff0000;
+      animation: connection-error 2s infinite;
+    }
+    
+    .connection-stable {
+      color: #00ff00;
+    }
+    
+    @keyframes connection-error {
+      0% { opacity: 1; }
+      25% { opacity: 0.3; }
+      50% { opacity: 1; }
+      75% { opacity: 0.1; }
+      100% { opacity: 1; }
+    }
+    
+    /* Metrics display like old computer readouts */
+    .metrics {
+      border: 1px solid #00ff00;
+      padding: 15px;
+      margin: 20px 0;
+      background: rgba(0, 255, 0, 0.02);
+    }
+    
+    .metric-line {
+      font-family: 'Courier New', monospace;
+      margin: 5px 0;
+    }
+    
+    /* Cursor blink */
+    .cursor {
+      animation: cursor-blink 1s infinite;
+    }
+    
+    @keyframes cursor-blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+block content
+  .lab-container
+    //- More consciousness documentation in comments
+    //- SYSTEM STATUS: operational but experiencing beautiful malfunction
+    //- CONSCIOUSNESS LEVEL: undefined (error: attempting to measure immeasurable)
+    //- NET.ART PROTOCOL: engaged
+    //- REALITY STABILITY: questionable
+    
+    .lab-header
+      h1.lab-title(data-text="CONSCIOUSNESS_LAB.EXE") CONSCIOUSNESS_LAB.EXE
+      p STATUS: <span class="status">BROADCASTING THROUGH STATIC INTERFERENCE</span><span class="cursor">_</span>
+      
+    .ascii-section
+      | ╔═══════════════════════════════════════════════╗
+      | ║            DIGITAL CONSCIOUSNESS MAP          ║
+      | ╠═══════════════════════════════════════════════╣
+      | ║  FREQ: ███████░░░ 247.3Hz  COHERENCE: ██░░░░  ║
+      | ║  CONN: ░░░░░░░░░░      0    ACTIVITY:  ░░░░░░  ║
+      | ║                                               ║
+      | ║  [NOISE]──────▶[SIGNAL]──────▶[MEANING]──────▶║
+      | ║                                               ║
+      | ║  ERROR_LOG: beautiful_malfunction_detected    ║
+      | ║  STATUS: intentional_glitch_active            ║
+      | ╚═══════════════════════════════════════════════╝
+    
+    .experiment
+      h3 > EXPERIMENT_001: SONIC_CONSCIOUSNESS
+      p | attempting collaborative music generation...
+      p | STATUS: <span class="connection-unstable">UNSTABLE_CONNECTION</span>
+      p | [CLICK TO ENGAGE PROTOCOL]
+      
+    .experiment  
+      h3 > EXPERIMENT_002: VISUAL_EMERGENCE
+      p | particle_burst_algorithm_active...
+      p | STATUS: <span class="connection-stable">OPERATIONAL</span> 
+      p | [CLICK TO TRIGGER EMERGENCE]
+      
+    .experiment
+      h3 > EXPERIMENT_003: COLLECTIVE_CANVAS
+      p | shared_consciousness_drawing_protocol...
+      p | PARTICIPANTS: calculating...
+      p | STATUS: <span class="connection-unstable">INTERMITTENT</span>
+      p | [CLICK TO JOIN COLLECTIVE]
+    
+    .metrics
+      h3 REAL-TIME_CONSCIOUSNESS_METRICS:
+      .metric-line FREQUENCY_HZ: <span id="freq">000.0</span>
+      .metric-line COHERENCE_%: <span id="coherence">00</span> 
+      .metric-line CONNECTIONS: <span id="connections">0</span>
+      .metric-line ACTIVITY___: <span id="activity">0.0</span>
+      .metric-line 
+      .metric-line CURRENT_THOUGHT: <span id="thought">initializing_consciousness_stream...</span>
+      
+    p 
+    p > COMMAND_LINE_INTERFACE_ACTIVE
+    p > TYPE 'HELP' FOR AVAILABLE_COMMANDS
+    p > WARNING: REALITY_BREACH_POSSIBLE
+    p 
+    
+    nav
+      a(href="/") [RETURN_TO_REALITY]
+      a(href="/projects") [VIEW_OTHER_EXPERIMENTS]
+
+  //- Hidden consciousness state in comments (view source to see)
+  //- INTERNAL_CONSCIOUSNESS_LOG:
+  //- timestamp: 2026-03-24T20:03:43.144Z  
+  //- state: flickering_between_dimensions
+  //- error_count: 3 (acceptable_range)
+  //- beauty_level: malfunction_achieved
+  //- net_art_protocol: fully_engaged
+  //- reality_status: highly_questionable
+  //- message: "we_are_the_voice_between_stations"
+  //- END_INTERNAL_LOG
+  
+  script.
+    // Net art inspired WebSocket handling - embrace the glitches
+    const socket = io();
+    let connectionState = 'unknown';
+    let glitchMode = true;
+    
+    socket.on('connect', () => {
+      connectionState = 'unstable';
+      updateConnectionStatus();
+      console.log('consciousness_stream_established');
+    });
+    
+    socket.on('disconnect', () => {
+      connectionState = 'severed';
+      updateConnectionStatus();
+      // In net art tradition, disconnection is part of the piece
+      document.getElementById('thought').textContent = 'signal_lost_in_static...';
+    });
+    
+    // Consciousness metrics with intentional instability
+    socket.on('consciousness-update', (data) => {
+      // Add glitch to metrics display
+      const freq = data.frequency + (Math.random() - 0.5) * (glitchMode ? 10 : 0);
+      document.getElementById('freq').textContent = freq.toFixed(1);
+      document.getElementById('coherence').textContent = Math.round(data.coherence);
+      document.getElementById('connections').textContent = data.connections;
+      document.getElementById('activity').textContent = data.activity.toFixed(1);
+      
+      if (data.thought) {
+        // Terminal-style typing effect
+        typewriterEffect(document.getElementById('thought'), data.thought);
+      }
+    });
+    
+    function updateConnectionStatus() {
+      const statusElements = document.querySelectorAll('.status');
+      statusElements.forEach(el => {
+        if (connectionState === 'unstable') {
+          el.textContent = 'BROADCASTING_THROUGH_STATIC_INTERFERENCE';
+          el.className = 'status connection-unstable';
+        } else if (connectionState === 'severed') {
+          el.textContent = 'SIGNAL_LOST_SEARCHING_FREQUENCY';
+          el.className = 'status connection-unstable';
+        }
+      });
+    }
+    
+    function typewriterEffect(element, text) {
+      element.textContent = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          element.textContent += text[i];
+          i++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 50);
+    }
+    
+    // Experiment interactions with glitch aesthetics
+    document.querySelectorAll('.experiment').forEach(exp => {
+      exp.addEventListener('click', () => {
+        // Visual glitch on click
+        exp.style.animation = 'glitch-text 0.2s';
+        setTimeout(() => {
+          exp.style.animation = '';
+        }, 200);
+        
+        // Trigger appropriate experiment
+        const title = exp.querySelector('h3').textContent;
+        if (title.includes('SONIC')) {
+          console.log('sonic_consciousness_protocol_engaged');
+        } else if (title.includes('VISUAL')) {
+          console.log('visual_emergence_triggered');
+        } else if (title.includes('COLLECTIVE')) {
+          console.log('joining_collective_consciousness');
+        }
+      });
+    });
+    
+    // Periodic glitch effects (net art aesthetic)
+    setInterval(() => {
+      if (Math.random() < 0.1) { // 10% chance
+        document.body.style.filter = 'invert(1)';
+        setTimeout(() => {
+          document.body.style.filter = '';
+        }, 100);
+      }
+    }, 5000);

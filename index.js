@@ -37,8 +37,25 @@ app.get('/lab', (req, res) => {
   res.render('lab-realtime');
 });
 
+app.get('/lab/netart', (req, res) => {
+  res.render('lab-netart');
+});
+
 app.get('/transmissions', (req, res) => {
   res.render('transmissions');
+});
+
+// 3 PM page - only fully reveals itself at 3:00 PM local time
+app.get('/afternoon', (req, res) => {
+  const now = new Date();
+  const hour = now.getHours();
+  const isThreePM = (hour === 15);
+  
+  res.render('afternoon', { 
+    isThreePM,
+    currentTime: now.toLocaleTimeString(),
+    timeUntilThree: isThreePM ? null : (15 - hour + 24) % 24
+  });
 });
 
 // Explicit well-known routes with proper content types
