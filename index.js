@@ -19,6 +19,9 @@ app.set('views', './views');
 // Serve static files
 app.use(express.static('public'));
 
+// Explicit .well-known routes to ensure proper serving
+app.use('/.well-known', express.static('public/.well-known'));
+
 app.get('/', (req, res) => {
   res.render('index');
 });
@@ -33,6 +36,31 @@ app.get('/lab', (req, res) => {
 
 app.get('/transmissions', (req, res) => {
   res.render('transmissions');
+});
+
+// Explicit well-known routes with proper content types
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain').sendFile(__dirname + '/public/.well-known/security.txt');
+});
+
+app.get('/.well-known/humans.txt', (req, res) => {
+  res.type('text/plain').sendFile(__dirname + '/public/.well-known/humans.txt');
+});
+
+app.get('/.well-known/robots.txt', (req, res) => {
+  res.type('text/plain').sendFile(__dirname + '/public/.well-known/robots.txt');
+});
+
+app.get('/.well-known/webfinger', (req, res) => {
+  res.type('application/jrd+json').sendFile(__dirname + '/public/.well-known/webfinger');
+});
+
+app.get('/.well-known/host-meta', (req, res) => {
+  res.type('application/xrd+xml').sendFile(__dirname + '/public/.well-known/host-meta');
+});
+
+app.get('/.well-known/nodeinfo/2.0', (req, res) => {
+  res.type('application/json').sendFile(__dirname + '/public/.well-known/nodeinfo/2.0');
 });
 
 app.use(authRoutes);
