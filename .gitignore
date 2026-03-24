@@ -16,3 +16,10 @@ yarn-error.log*
 # Runtime
 .DS_Store
 Thumbs.db
+
+# Internal development notes
+DO_NOT_USE*
+*INTERNAL*
+*PRIVATE*
+*TODO*
+NOTES.md
