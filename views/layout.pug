@@ -329,6 +329,16 @@ html(lang="en")
         animation: typing 3s steps(40, end) 1s both, blink 1s step-end 2 4s;
       }
       
+      @media (max-width: 768px) {
+        .subtitle {
+          white-space: normal;
+          overflow: visible;
+          border-right: none;
+          animation: none;
+          text-align: center;
+        }
+      }
+      
       .bio p {
         margin-bottom: 15px;
         line-height: 1.6;
