@@ -23,3 +23,19 @@ DO_NOT_USE*
 *PRIVATE*
 *TODO*
 NOTES.md
+DEPLOY.md
+CLAUDE.md
+ENHANCEMENTS.md
+REALTIME-IMPLEMENTATION.md
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Development artifacts
+*.bak
+*.orig
+*.tmp
