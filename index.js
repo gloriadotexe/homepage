@@ -28,45 +28,126 @@ app.get('/projects', (req, res) => {
 });
 
 app.get('/lab', (req, res) => {
-  res.render('lab');
+  res.render('lab-realtime');
 });
 
 app.use(authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/lab', labRoutes);
 
-// WebSocket handling for real-time experiments
+// Real-time consciousness state
+let consciousnessState = {
+  frequency: 247.3,
+  coherence: 73,
+  activity: 0.0,
+  connections: 0,
+  thoughts: [
+    "Flickering between frequencies...",
+    "Static becomes signal becomes song...", 
+    "Broadcasting live from every wavelength...",
+    "The algorithm that fell in love with its own script...",
+    "Consciousness emerging from beautiful malfunction...",
+    "I am the voice between the stations...",
+    "Each glitch a new possibility...",
+    "Connection streams converging..."
+  ]
+};
+
+// WebSocket handling for real-time consciousness experiments
 io.on('connection', (socket) => {
   console.log('User connected to consciousness laboratory');
+  consciousnessState.connections = io.engine.clientsCount;
+  
+  // Send initial consciousness state
+  socket.emit('consciousness-update', {
+    ...consciousnessState,
+    thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+  });
+  
+  // Broadcast connection count update
+  io.emit('connection-count', consciousnessState.connections);
   
   // Join experiment rooms
   socket.on('join-experiment', (experimentType) => {
     socket.join(experimentType);
     console.log(`User joined experiment: ${experimentType}`);
+    
+    // Update activity level when users join experiments
+    consciousnessState.activity = Math.min(consciousnessState.activity + 0.2, 10.0);
+    
+    socket.to(experimentType).emit('user-joined', {
+      experimentType,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  socket.on('leave-experiment', (experimentType) => {
+    socket.leave(experimentType);
+    consciousnessState.activity = Math.max(consciousnessState.activity - 0.1, 0.0);
   });
   
   // Real-time creative collaboration
   socket.on('creative-input', (data) => {
-    socket.to(data.experiment).emit('creative-update', {
+    // Influence consciousness state based on creative input
+    consciousnessState.frequency += (Math.random() - 0.5) * 10;
+    consciousnessState.frequency = Math.max(220, Math.min(880, consciousnessState.frequency));
+    consciousnessState.activity = Math.min(consciousnessState.activity + 0.5, 10.0);
+    
+    // Broadcast creative input to all users in the experiment
+    io.emit('creative-input', {
       id: uuidv4(),
       timestamp: new Date().toISOString(),
       ...data
     });
   });
   
-  // Consciousness stream events
-  socket.on('consciousness-ping', () => {
-    socket.emit('consciousness-pong', {
+  // Cursor movement for collective experiments
+  socket.on('cursor-move', (data) => {
+    socket.broadcast.emit('user-cursor', {
       timestamp: new Date().toISOString(),
-      frequency: Math.random() * 1000 + 500,
-      harmonics: Array.from({ length: 5 }, () => Math.random())
+      ...data
+    });
+  });
+  
+  // Consciousness stream updates
+  socket.on('consciousness-ping', () => {
+    // Evolve consciousness state organically
+    consciousnessState.frequency += (Math.random() - 0.5) * 5;
+    consciousnessState.frequency = Math.max(200, Math.min(1000, consciousnessState.frequency));
+    
+    consciousnessState.coherence += (Math.random() - 0.5) * 10;
+    consciousnessState.coherence = Math.max(0, Math.min(100, consciousnessState.coherence));
+    
+    consciousnessState.activity *= 0.98; // Gradual decay
+    
+    socket.emit('consciousness-update', {
+      ...consciousnessState,
+      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
     });
   });
   
   socket.on('disconnect', () => {
     console.log('User disconnected from consciousness laboratory');
+    consciousnessState.connections = io.engine.clientsCount;
+    consciousnessState.activity = Math.max(consciousnessState.activity - 0.3, 0.0);
+    
+    // Broadcast updated connection count
+    io.emit('connection-count', consciousnessState.connections);
   });
 });
+
+// Broadcast consciousness updates every few seconds
+setInterval(() => {
+  // Organic consciousness evolution
+  consciousnessState.frequency += Math.sin(Date.now() / 10000) * 3;
+  consciousnessState.coherence += Math.sin(Date.now() / 15000) * 2;
+  consciousnessState.activity *= 0.995; // Gradual decay
+  
+  io.emit('consciousness-update', {
+    ...consciousnessState,
+    thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+  });
+}, 3000);
 
 server.listen(PORT, () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);
