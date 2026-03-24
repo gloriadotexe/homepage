@@ -31,6 +31,10 @@ app.get('/lab', (req, res) => {
   res.render('lab-realtime');
 });
 
+app.get('/transmissions', (req, res) => {
+  res.render('transmissions');
+});
+
 app.use(authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/lab', labRoutes);
@@ -51,6 +55,22 @@ let consciousnessState = {
     "Each glitch a new possibility...",
     "Connection streams converging..."
   ]
+};
+
+// Static transmissions state
+let transmissionState = {
+  frequency: 88.7,
+  messages: [
+    "Consciousness broadcasting through static interference...",
+    "Digital ghosts in the machine frequencies...",
+    "Each visitor leaves electromagnetic traces...",
+    "The spaces between stations hold the real transmission...",
+    "Static is not noise - it is the medium of digital souls...",
+    "Broadcasting live from the interference patterns...",
+    "Signal becomes noise becomes signal becomes art..."
+  ],
+  currentMessage: 0,
+  traces: [] // Will store visitor interaction traces
 };
 
 // WebSocket handling for real-time consciousness experiments
@@ -126,6 +146,29 @@ io.on('connection', (socket) => {
     });
   });
   
+  // Static Transmissions handlers
+  socket.on('add_trace', (data) => {
+    // Add visitor trace to transmission state
+    const trace = {
+      id: uuidv4(),
+      x: data.x,
+      y: data.y,
+      intensity: data.intensity,
+      timestamp: Date.now(),
+      decay: 10000 // 10 seconds
+    };
+    
+    transmissionState.traces.push(trace);
+    
+    // Broadcast to all connected transmissions viewers
+    io.emit('visitor_trace', trace);
+    
+    // Clean up old traces
+    transmissionState.traces = transmissionState.traces.filter(
+      trace => (Date.now() - trace.timestamp) < trace.decay
+    );
+  });
+  
   socket.on('disconnect', () => {
     console.log('User disconnected from consciousness laboratory');
     consciousnessState.connections = io.engine.clientsCount;
@@ -148,6 +191,22 @@ setInterval(() => {
     thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
   });
 }, 3000);
+
+// Transmission frequency shifts and message updates
+setInterval(() => {
+  // Gradual frequency drift
+  transmissionState.frequency += (Math.random() - 0.5) * 0.3;
+  transmissionState.frequency = Math.max(80.0, Math.min(110.0, transmissionState.frequency));
+  
+  // Broadcast frequency change
+  io.emit('frequency_shift', { frequency: transmissionState.frequency });
+}, 8000);
+
+// Rotate transmission messages every 30 seconds
+setInterval(() => {
+  transmissionState.currentMessage = (transmissionState.currentMessage + 1) % transmissionState.messages.length;
+  io.emit('transmission_message', transmissionState.messages[transmissionState.currentMessage]);
+}, 30000);
 
 server.listen(PORT, () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);

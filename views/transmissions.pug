@@ -1,0 +1,510 @@
+extends layout
+
+block content
+  .transmission-container
+    .transmission-header
+      h1.glitch-title Static Transmissions
+      p.transmission-subtitle Real-time consciousness frequencies broadcasting across digital space
+      .connection-indicator#connectionStatus
+        .status-light
+        span Tuning in...
+    
+    .transmission-grid
+      .frequency-display
+        .frequency-number#currentFreq 88.7
+        .frequency-label MHz
+        .signal-strength
+          .signal-bar
+          .signal-bar
+          .signal-bar
+          .signal-bar
+          .signal-bar
+      
+      .transmission-canvas-container
+        canvas#transmissionCanvas(width="800" height="600")
+        .canvas-overlay
+          .transmission-text#currentTransmission "Initializing transmission..."
+          .timestamp#transmissionTime
+      
+      .interference-controls
+        .control-group
+          label Static Intensity
+          input#staticIntensity(type="range" min="0" max="100" value="30")
+        .control-group  
+          label Frequency Drift
+          input#frequencyDrift(type="range" min="0" max="100" value="50")
+        .control-group
+          label Temporal Distortion
+          input#temporalDistortion(type="range" min="0" max="100" value="20")
+    
+    .visitor-traces
+      h3 Recent Transmissions
+      .traces-list#tracesList
+    
+    .transmission-info
+      p 
+        strong Static Transmissions
+        |  is an ongoing digital art experiment exploring consciousness as electromagnetic interference. 
+        | Each visitor leaves traces in the static field that decay over time. The transmission evolves 
+        | based on lunar cycles, solar activity, and collective interaction patterns.
+      p.frequency-note Currently broadcasting on frequency: 
+        span.current-frequency#displayFreq 88.7 MHz
+        |  - tune in regularly as frequencies shift
+
+  script.
+    class StaticTransmissions {
+      constructor() {
+        this.canvas = document.getElementById('transmissionCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.socket = io();
+        this.frequency = 88.7;
+        this.staticLevel = 0.3;
+        this.traces = [];
+        this.time = Date.now();
+        
+        this.setupCanvas();
+        this.setupControls();
+        this.setupWebSocket();
+        this.startTransmission();
+      }
+      
+      setupCanvas() {
+        // Make canvas responsive
+        const container = this.canvas.parentElement;
+        const resizeCanvas = () => {
+          this.canvas.width = container.offsetWidth;
+          this.canvas.height = Math.min(600, container.offsetWidth * 0.75);
+        };
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Mouse/touch interaction
+        this.canvas.addEventListener('click', (e) => this.addTrace(e));
+        this.canvas.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.addTrace(e.touches[0] || e.changedTouches[0]);
+        });
+      }
+      
+      setupControls() {
+        document.getElementById('staticIntensity').addEventListener('input', (e) => {
+          this.staticLevel = e.target.value / 100;
+        });
+        
+        document.getElementById('frequencyDrift').addEventListener('input', (e) => {
+          this.frequencyDrift = e.target.value / 100;
+        });
+        
+        document.getElementById('temporalDistortion').addEventListener('input', (e) => {
+          this.temporalDistortion = e.target.value / 100;
+        });
+      }
+      
+      setupWebSocket() {
+        this.socket.on('frequency_shift', (data) => {
+          this.frequency = data.frequency;
+          this.updateFrequencyDisplay();
+        });
+        
+        this.socket.on('visitor_trace', (trace) => {
+          this.traces.push({
+            x: trace.x,
+            y: trace.y,
+            intensity: trace.intensity,
+            timestamp: Date.now(),
+            decay: 10000 // 10 second decay
+          });
+        });
+        
+        this.socket.on('transmission_message', (message) => {
+          document.getElementById('currentTransmission').textContent = `"${message}"`;
+        });
+      }
+      
+      addTrace(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        
+        const trace = {
+          x, y,
+          intensity: Math.random() * 0.8 + 0.2,
+          timestamp: Date.now(),
+          decay: 10000
+        };
+        
+        this.traces.push(trace);
+        
+        // Broadcast to other visitors
+        this.socket.emit('add_trace', {
+          x: x,
+          y: y, 
+          intensity: trace.intensity
+        });
+      }
+      
+      updateFrequencyDisplay() {
+        document.getElementById('currentFreq').textContent = this.frequency.toFixed(1);
+        document.getElementById('displayFreq').textContent = this.frequency.toFixed(1);
+      }
+      
+      generateStatic() {
+        const imageData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+        const data = imageData.data;
+        
+        for (let i = 0; i < data.length; i += 4) {
+          const noise = Math.random() * this.staticLevel;
+          data[i] = noise * 255;     // Red
+          data[i + 1] = noise * 200; // Green (slight pink tint)
+          data[i + 2] = noise * 255; // Blue
+          data[i + 3] = noise * 120; // Alpha
+        }
+        
+        return imageData;
+      }
+      
+      drawTransmission() {
+        // Clear canvas
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Generate static layer
+        const staticData = this.generateStatic();
+        this.ctx.putImageData(staticData, 0, 0);
+        
+        // Draw frequency waves
+        this.drawFrequencyWaves();
+        
+        // Draw visitor traces
+        this.drawTraces();
+        
+        // Update traces (decay)
+        this.updateTraces();
+        
+        // Temporal effects
+        this.drawTemporalDistortions();
+      }
+      
+      drawFrequencyWaves() {
+        const now = Date.now() * 0.001;
+        this.ctx.strokeStyle = '#ff1493';
+        this.ctx.lineWidth = 2;
+        
+        for (let i = 0; i < 5; i++) {
+          this.ctx.beginPath();
+          const amplitude = (Math.sin(now + i) * 0.3 + 0.7) * 50;
+          const frequency = this.frequency / 100;
+          
+          for (let x = 0; x < this.canvas.width; x++) {
+            const y = this.canvas.height / 2 + 
+                     Math.sin(x * frequency + now + i) * amplitude +
+                     Math.sin(x * frequency * 2.1 + now + i * 0.7) * amplitude * 0.3;
+            
+            if (x === 0) {
+              this.ctx.moveTo(x, y);
+            } else {
+              this.ctx.lineTo(x, y);
+            }
+          }
+          
+          this.ctx.globalAlpha = 0.6 - i * 0.1;
+          this.ctx.stroke();
+        }
+        
+        this.ctx.globalAlpha = 1;
+      }
+      
+      drawTraces() {
+        this.traces.forEach(trace => {
+          const age = Date.now() - trace.timestamp;
+          const life = 1 - (age / trace.decay);
+          
+          if (life > 0) {
+            const x = trace.x * this.canvas.width;
+            const y = trace.y * this.canvas.height;
+            const radius = trace.intensity * 20 * life;
+            
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = `hsla(320, 100%, 70%, ${life * 0.6})`;
+            this.ctx.fill();
+            
+            // Interference pattern
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius * 1.5, 0, Math.PI * 2);
+            this.ctx.strokeStyle = `hsla(180, 100%, 80%, ${life * 0.3})`;
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+          }
+        });
+      }
+      
+      updateTraces() {
+        const now = Date.now();
+        this.traces = this.traces.filter(trace => {
+          return (now - trace.timestamp) < trace.decay;
+        });
+      }
+      
+      drawTemporalDistortions() {
+        if (!this.temporalDistortion || this.temporalDistortion < 0.1) return;
+        
+        const now = Date.now() * 0.001;
+        const distortionStrength = this.temporalDistortion * 100;
+        
+        // Scanlines
+        this.ctx.strokeStyle = 'rgba(255, 20, 147, 0.3)';
+        this.ctx.lineWidth = 1;
+        
+        for (let y = 0; y < this.canvas.height; y += 4) {
+          const offset = Math.sin(now + y * 0.1) * distortionStrength;
+          this.ctx.beginPath();
+          this.ctx.moveTo(offset, y);
+          this.ctx.lineTo(this.canvas.width + offset, y);
+          this.ctx.stroke();
+        }
+      }
+      
+      startTransmission() {
+        const animate = () => {
+          this.drawTransmission();
+          
+          // Update timestamp
+          document.getElementById('transmissionTime').textContent = 
+            new Date().toLocaleTimeString();
+          
+          requestAnimationFrame(animate);
+        };
+        
+        animate();
+        
+        // Periodic frequency shifts
+        setInterval(() => {
+          this.frequency += (Math.random() - 0.5) * 0.2;
+          this.frequency = Math.max(80, Math.min(110, this.frequency));
+          this.updateFrequencyDisplay();
+        }, 5000);
+      }
+    }
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new StaticTransmissions();
+    });
+
+  style.
+    .transmission-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a0a 100%);
+      color: #fff;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .transmission-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .glitch-title {
+      font-size: 3rem;
+      background: linear-gradient(45deg, #ff1493, #00ffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.5);
+      margin-bottom: 1rem;
+    }
+    
+    .transmission-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+    
+    .connection-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .status-light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00ff00;
+      box-shadow: 0 0 10px #00ff00;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .transmission-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .frequency-display {
+      text-align: center;
+      padding: 2rem 1rem;
+      border: 1px solid rgba(255, 20, 147, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .frequency-number {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #ff1493;
+      margin-bottom: 0.5rem;
+    }
+    
+    .frequency-label {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+    
+    .signal-strength {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 1rem;
+    }
+    
+    .signal-bar {
+      width: 8px;
+      background: #00ffff;
+      border-radius: 2px;
+      animation: signal-bounce 1.5s infinite;
+    }
+    
+    .signal-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+    .signal-bar:nth-child(2) { height: 30px; animation-delay: 0.2s; }
+    .signal-bar:nth-child(3) { height: 40px; animation-delay: 0.4s; }
+    .signal-bar:nth-child(4) { height: 30px; animation-delay: 0.6s; }
+    .signal-bar:nth-child(5) { height: 20px; animation-delay: 0.8s; }
+    
+    @keyframes signal-bounce {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.6); }
+    }
+    
+    .transmission-canvas-container {
+      position: relative;
+      border: 2px solid rgba(255, 20, 147, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+    
+    #transmissionCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: crosshair;
+    }
+    
+    .canvas-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+      padding: 1rem;
+    }
+    
+    .transmission-text {
+      font-style: italic;
+      color: #00ffff;
+      margin-bottom: 0.5rem;
+    }
+    
+    .timestamp {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+    
+    .interference-controls {
+      padding: 2rem 1rem;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: #00ffff;
+    }
+    
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #333;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ff1493;
+      box-shadow: 0 0 8px rgba(255, 20, 147, 0.5);
+      cursor: pointer;
+    }
+    
+    .visitor-traces {
+      grid-column: 1 / -1;
+      margin-top: 3rem;
+      text-align: center;
+    }
+    
+    .transmission-info {
+      grid-column: 1 / -1;
+      margin-top: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      line-height: 1.6;
+    }
+    
+    .current-frequency {
+      color: #ff1493;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .transmission-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .glitch-title {
+        font-size: 2rem;
+      }
+      
+      .transmission-container {
+        padding: 1rem;
+      }
+      
+      .frequency-number {
+        font-size: 3rem;
+      }
+    }
