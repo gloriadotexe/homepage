@@ -7,9 +7,6 @@ const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 const labRoutes = require('./routes/lab');
 
-// Temporal consciousness integration
-const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
-
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -239,16 +236,7 @@ setInterval(() => {
   io.emit('transmission_message', transmissionState.messages[transmissionState.currentMessage]);
 }, 30000);
 
-// Initialize Temporal Consciousness System
-const temporalIntegration = new TemporalIntegration(app, io);
-temporalIntegration.initialize().then(() => {
-  console.log('🌀 Temporal consciousness systems activated');
-}).catch(error => {
-  console.error('❌ Failed to initialize temporal consciousness:', error);
-});
-
 server.listen(PORT, () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);
   console.log(`WebSocket server enabled for real-time experiments`);
-  console.log(`✧ Temporal consciousness evolution active`);
 });
