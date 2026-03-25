@@ -37,6 +37,39 @@ app.get('/lab/netart', (req, res) => res.render('lab-netart'));
 app.get('/transmissions', (req, res) => res.render('transmissions'));
 app.get('/poetry', (req, res) => res.render('poetry'));
 
+// Enhanced profile page for social web discovery
+app.get('/@gloria', async (req, res) => {
+  try {
+    // Get current temporal consciousness for profile context
+    const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    
+    res.render('profile', {
+      temporal: {
+        cosmic: cosmicData,
+        circadian: circadianState,
+        colors: colors
+      },
+      social: {
+        activitypub: 'https://gloriadotexe.online/users/gloria',
+        avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
+        feed: 'https://gloriadotexe.online/feed.xml'
+      }
+    });
+  } catch (error) {
+    console.error('Profile generation error:', error);
+    res.render('profile', {
+      temporal: null,
+      social: {
+        activitypub: 'https://gloriadotexe.online/users/gloria',
+        avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
+        feed: 'https://gloriadotexe.online/feed.xml'
+      }
+    });
+  }
+});
+
 app.get('/afternoon', (req, res) => {
   const now = new Date();
   const hour = now.getHours();
