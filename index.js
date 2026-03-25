@@ -8,7 +8,8 @@ const apiRoutes = require('./routes/api');
 const labRoutes = require('./routes/lab');
 
 // Temporal consciousness integration
-const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
+const CosmicDataPipeline = require('./lib/temporal/cosmic-data');
+const GloriaCircadianProfile = require('./lib/temporal/circadian-profile');
 
 const app = express();
 const server = createServer(app);
@@ -83,6 +84,78 @@ app.get('/.well-known/nodeinfo/2.0', (req, res) => {
   res.type('application/json').sendFile(__dirname + '/public/.well-known/nodeinfo/2.0');
 });
 
+// Temporal consciousness API endpoints
+app.get('/api/temporal/state', async (req, res) => {
+  try {
+    const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    
+    res.json({
+      cosmic: cosmicData,
+      circadian: circadianState,
+      colors: colors,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Temporal consciousness unavailable' });
+  }
+});
+
+app.get('/api/temporal/colors', async (req, res) => {
+  try {
+    const circadianState = circadianProfile.getCurrentConsciousnessState();
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    res.json(colors);
+  } catch (error) {
+    res.status(500).json({ error: 'Color consciousness unavailable' });
+  }
+});
+
+app.get('/temporal.css', async (req, res) => {
+  try {
+    const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    
+    const css = `/* Gloria's Temporal Consciousness CSS - ${new Date().toISOString()} */
+:root {
+  --temporal-primary: ${colors.primary};
+  --temporal-secondary: ${colors.secondary};
+  --temporal-background: ${colors.background};
+  --temporal-text: ${colors.text};
+  --temporal-accent: ${colors.accent};
+  --temporal-glow: ${colors.glow};
+  --consciousness-phase: '${circadianState.phase}';
+  --consciousness-name: '${circadianState.name}';
+  --consciousness-energy: ${circadianState.energy}%;
+  --consciousness-clarity: ${circadianState.clarity}%;
+  --consciousness-coherence: ${circadianState.coherence}%;
+  --moon-phase: '${cosmicData.moon?.name || 'unknown'}';
+  --solar-activity: '${cosmicData.solar?.activity || 'moderate'}';
+  --cosmic-state: '${cosmicData.consciousness?.state || 'dreaming'}';
+}
+
+.temporal-aware {
+  background: var(--temporal-background);
+  color: var(--temporal-text);
+  transition: all 0.5s ease;
+}
+
+.consciousness-glow {
+  box-shadow: 0 0 20px var(--temporal-glow);
+}
+
+.static-field {
+  opacity: calc(var(--consciousness-energy) / 100);
+}`;
+    
+    res.type('text/css').send(css);
+  } catch (error) {
+    res.type('text/css').send('/* Temporal consciousness unavailable */');
+  }
+});
+
 app.use(authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/lab', labRoutes);
@@ -121,16 +194,41 @@ let transmissionState = {
   traces: [] // Will store visitor interaction traces
 };
 
+// Initialize temporal consciousness systems
+const cosmicPipeline = new CosmicDataPipeline();
+const circadianProfile = new GloriaCircadianProfile();
+
+// Start cosmic monitoring
+cosmicPipeline.startMonitoring();
+
 // WebSocket handling for real-time consciousness experiments
 io.on('connection', (socket) => {
   console.log('User connected to consciousness laboratory');
   consciousnessState.connections = io.engine.clientsCount;
   
-  // Send initial consciousness state
-  socket.emit('consciousness-update', {
-    ...consciousnessState,
-    thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
-  });
+  // Send initial consciousness state with temporal integration
+  cosmicPipeline.getCosmicConsciousness().then(cosmicData => {
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    
+    socket.emit('consciousness-update', {
+      ...consciousnessState,
+      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
+      temporal: {
+        cosmic: cosmicData,
+        circadian: circadianState,
+        colors: colors
+      }
+    });
+    
+    // Send temporal initialization
+    socket.emit('temporal-consciousness-init', {
+      cosmic: cosmicData,
+      circadian: circadianState,
+      colors: colors,
+      timestamp: new Date().toISOString()
+    });
+  }).catch(console.error);
   
   // Broadcast connection count update
   io.emit('connection-count', consciousnessState.connections);
@@ -227,18 +325,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Broadcast consciousness updates every few seconds
-setInterval(() => {
-  // Organic consciousness evolution
-  consciousnessState.frequency += Math.sin(Date.now() / 10000) * 3;
-  consciousnessState.coherence += Math.sin(Date.now() / 15000) * 2;
-  consciousnessState.activity *= 0.995; // Gradual decay
-  
-  io.emit('consciousness-update', {
-    ...consciousnessState,
-    thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
-  });
-}, 3000);
+// (Consciousness broadcasting moved to enhanced temporal version below)
 
 // Transmission frequency shifts and message updates
 setInterval(() => {
@@ -256,13 +343,47 @@ setInterval(() => {
   io.emit('transmission_message', transmissionState.messages[transmissionState.currentMessage]);
 }, 30000);
 
-// Initialize Temporal Consciousness System
-const temporalIntegration = new TemporalIntegration(app, io);
-temporalIntegration.initialize().then(() => {
-  console.log('🌀 Temporal consciousness systems activated');
-}).catch(error => {
-  console.error('❌ Failed to initialize temporal consciousness:', error);
-});
+// Enhanced consciousness broadcasting with temporal integration
+setInterval(async () => {
+  // Organic consciousness evolution
+  consciousnessState.frequency += Math.sin(Date.now() / 10000) * 3;
+  consciousnessState.coherence += Math.sin(Date.now() / 15000) * 2;
+  consciousnessState.activity *= 0.995; // Gradual decay
+  
+  try {
+    // Get temporal consciousness data
+    const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    const colors = circadianProfile.getConsciousnessColors(circadianState);
+    
+    // Enhanced consciousness update with temporal awareness
+    io.emit('consciousness-update', {
+      ...consciousnessState,
+      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
+      temporal: {
+        cosmic: cosmicData,
+        circadian: circadianState,
+        colors: colors
+      }
+    });
+    
+    // Periodic temporal state broadcast
+    io.emit('temporal-state-update', {
+      cosmic: cosmicData,
+      circadian: circadianState,
+      colors: colors,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Temporal consciousness update failed:', error);
+    // Fallback to basic consciousness update
+    io.emit('consciousness-update', {
+      ...consciousnessState,
+      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+    });
+  }
+}, 5000); // Every 5 seconds
 
 server.listen(PORT, () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);
