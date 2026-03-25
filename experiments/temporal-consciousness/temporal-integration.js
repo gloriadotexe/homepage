@@ -97,11 +97,12 @@ class TemporalIntegration {
       });
     });
 
-    // Serve Gloria's image archive for temporal selection
-    const imagePath = process.env.NODE_ENV === 'production' 
-      ? '/home/gloria/creative/images'
-      : '/media/samsung4tb/openclaw-workspaces/gloria.exe/creative/images';
+    // Serve Gloria's image archive for temporal selection - hardcoded for production
+    const imagePath = '/home/gloria/creative/images';
+    
+    console.log('✧ Setting up gallery route with path:', imagePath);
     this.app.use('/gallery', require('express').static(imagePath));
+    console.log('✧ Gallery route registered');
   }
 
   // Setup temporal middleware

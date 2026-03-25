@@ -38,7 +38,6 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': 'off',
       'no-useless-escape': 'warn',
-      'no-const-assign': 'warn',
       'no-undef': 'warn',
     },
   },

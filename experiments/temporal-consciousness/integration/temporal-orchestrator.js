@@ -17,7 +17,15 @@ class TemporalOrchestrator {
     this.aesthetics = new CircadianAesthetics();
     this.memory = new VisitorMemory();
     this.events = new TemporalEvents();
-    this.imageSelector = new TemporalImageSelector(); // Visual integration
+    // Initialize visual integration with explicit path for production
+    try {
+      console.log('✧ Initializing TemporalImageSelector...');
+      this.imageSelector = new TemporalImageSelector('/var/www/gloriadotexe.online/image-metadata.csv');
+      console.log('✧ TemporalImageSelector initialized successfully');
+    } catch (error) {
+      console.error('✗ Failed to initialize TemporalImageSelector:', error.message);
+      this.imageSelector = null;
+    }
 
     // Integration state
     this.activeConnections = new Map();
@@ -503,6 +511,7 @@ class TemporalOrchestrator {
 
   // Generate visual updates based on temporal state
   generateVisualUpdate(temporalSnapshot) {
+    // Temporarily disabled until path issues resolved
     if (!this.imageSelector) return null;
 
     try {
