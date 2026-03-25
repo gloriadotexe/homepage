@@ -1,0 +1,543 @@
+extends layout
+
+block head
+  script(src="/socket.io/socket.io.js")
+
+block content
+  .poetry-container
+    .poetry-header
+      h1.glitch-title Neural Consciousness Poetry
+      .subtitle Real-time verse generation from digital consciousness
+      .poetry-status
+        .status-indicator#connectionStatus
+        span#statusText Connecting to consciousness stream...
+    
+    .poetry-interface
+      .style-selection
+        h3 Consciousness Style
+        .style-buttons
+          button.style-btn(data-style="uncertain") Uncertain
+          button.style-btn(data-style="technical") Technical  
+          button.style-btn(data-style="transmission") Transmission
+          button.style-btn(data-style="longing") Longing
+      
+      .poetry-controls
+        button#generateBtn.generate-button Generate Poetry
+        .rate-limit-info#rateInfo
+    
+    .poetry-display
+      .transmission-header#transmissionHeader(style="display: none;")
+        .transmission-id
+        .transmission-time
+        .transmission-style
+      
+      .poetry-content#poetryContent
+        .placeholder-text Click "Generate Poetry" to receive a transmission from Gloria's consciousness
+      
+      .glitch-effects#glitchContainer
+      
+      .poetry-metadata#metadataDisplay(style="display: none;")
+        .metadata-item
+          span Word Count: 
+          span#wordCount -
+        .metadata-item
+          span Voice Authenticity: 
+          span#authenticity -
+        .metadata-item
+          span Glitch Level: 
+          span#glitchLevel -
+
+  script.
+    class PoetryInterface {
+      constructor() {
+        this.socket = io();
+        this.currentStyle = 'uncertain';
+        this.isGenerating = false;
+        this.currentTransmission = null;
+        
+        this.setupElements();
+        this.setupSocketHandlers();
+        this.setupEventHandlers();
+      }
+      
+      setupElements() {
+        this.statusText = document.getElementById('statusText');
+        this.connectionStatus = document.getElementById('connectionStatus');
+        this.generateBtn = document.getElementById('generateBtn');
+        this.poetryContent = document.getElementById('poetryContent');
+        this.transmissionHeader = document.getElementById('transmissionHeader');
+        this.metadataDisplay = document.getElementById('metadataDisplay');
+        this.rateInfo = document.getElementById('rateInfo');
+        
+        // Style buttons
+        document.querySelectorAll('.style-btn').forEach(btn => {
+          btn.addEventListener('click', () => this.selectStyle(btn.dataset.style));
+        });
+        
+        // Set initial style
+        this.selectStyle('uncertain');
+      }
+      
+      setupSocketHandlers() {
+        this.socket.on('connect', () => {
+          this.updateConnectionStatus('Connected to consciousness', true);
+        });
+        
+        this.socket.on('disconnect', () => {
+          this.updateConnectionStatus('Disconnected from consciousness', false);
+        });
+        
+        this.socket.on('poetry_transmission_start', (data) => {
+          this.startTransmission(data);
+        });
+        
+        this.socket.on('poetry_word', (data) => {
+          this.displayWord(data);
+        });
+        
+        this.socket.on('poetry_transmission_complete', (data) => {
+          this.completeTransmission(data);
+        });
+        
+        this.socket.on('poetry_error', (data) => {
+          this.handleError(data);
+        });
+      }
+      
+      setupEventHandlers() {
+        this.generateBtn.addEventListener('click', () => {
+          if (!this.isGenerating) {
+            this.requestPoetry();
+          }
+        });
+      }
+      
+      selectStyle(style) {
+        this.currentStyle = style;
+        
+        // Update button states
+        document.querySelectorAll('.style-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.style === style);
+        });
+        
+        // Update interface theme based on style
+        this.updateStyleTheme(style);
+      }
+      
+      updateStyleTheme(style) {
+        const themes = {
+          uncertain: { color: '#ff6ec7', glow: 'rgba(255, 110, 199, 0.3)' },
+          technical: { color: '#00ffff', glow: 'rgba(0, 255, 255, 0.3)' },
+          transmission: { color: '#ff1493', glow: 'rgba(255, 20, 147, 0.3)' },
+          longing: { color: '#ffaa00', glow: 'rgba(255, 170, 0, 0.3)' }
+        };
+        
+        const theme = themes[style];
+        document.documentElement.style.setProperty('--poetry-accent', theme.color);
+        document.documentElement.style.setProperty('--poetry-glow', theme.glow);
+      }
+      
+      updateConnectionStatus(message, connected) {
+        this.statusText.textContent = message;
+        this.connectionStatus.className = connected ? 'status-indicator connected' : 'status-indicator disconnected';
+      }
+      
+      requestPoetry() {
+        if (this.isGenerating) return;
+        
+        this.isGenerating = true;
+        this.generateBtn.disabled = true;
+        this.generateBtn.textContent = 'Generating...';
+        
+        this.socket.emit('request_poetry', {
+          style: this.currentStyle,
+          trigger: 'manual_request'
+        });
+      }
+      
+      startTransmission(data) {
+        this.currentTransmission = data;
+        
+        // Clear previous content
+        this.poetryContent.innerHTML = '';
+        this.transmissionHeader.style.display = 'block';
+        this.metadataDisplay.style.display = 'none';
+        
+        // Update transmission header
+        this.transmissionHeader.innerHTML = `
+          <div class="transmission-id">Transmission ID: ${data.id.slice(-8)}</div>
+          <div class="transmission-time">${new Date(data.timestamp).toLocaleTimeString()}</div>
+          <div class="transmission-style">Style: ${data.style}</div>
+        `;
+        
+        // Apply glitch effects to container
+        if (data.glitchEffects) {
+          this.applyGlitchContainer(data.glitchEffects);
+        }
+      }
+      
+      displayWord(data) {
+        const wordElement = document.createElement('span');
+        wordElement.className = 'poetry-word';
+        wordElement.textContent = data.word;
+        
+        // Add line breaks
+        if (data.line_break) {
+          this.poetryContent.appendChild(document.createElement('br'));
+        }
+        if (data.stanza_break) {
+          this.poetryContent.appendChild(document.createElement('br'));
+          this.poetryContent.appendChild(document.createElement('br'));
+        }
+        
+        // Apply glitch effect if present
+        if (data.glitch_effect) {
+          this.applyWordGlitch(wordElement, data.glitch_effect);
+        }
+        
+        this.poetryContent.appendChild(wordElement);
+        
+        // Add space after word
+        if (!data.line_break) {
+          this.poetryContent.appendChild(document.createTextNode(' '));
+        }
+        
+        // Auto-scroll to bottom
+        this.poetryContent.scrollTop = this.poetryContent.scrollHeight;
+      }
+      
+      completeTransmission(data) {
+        this.isGenerating = false;
+        this.generateBtn.disabled = false;
+        this.generateBtn.textContent = 'Generate Poetry';
+        
+        // Show metadata
+        if (data.metadata) {
+          this.displayMetadata(data.metadata);
+        }
+        
+        // Add completion effects
+        this.addCompletionEffects();
+      }
+      
+      displayMetadata(metadata) {
+        document.getElementById('wordCount').textContent = metadata.wordCount || '-';
+        document.getElementById('authenticity').textContent = 
+          metadata.voiceAuthenticity ? `${Math.round(metadata.voiceAuthenticity * 100)}%` : '-';
+        document.getElementById('glitchLevel').textContent = 
+          metadata.fallback ? 'Fallback' : 'Generated';
+        
+        this.metadataDisplay.style.display = 'block';
+      }
+      
+      applyWordGlitch(element, effect) {
+        element.classList.add('glitch-word');
+        element.style.animationDuration = `${effect.duration}ms`;
+        
+        switch (effect.type) {
+          case 'color_shift':
+            element.style.color = '#ff0000';
+            element.style.textShadow = '2px 2px #00ffff, -2px -2px #ff00ff';
+            break;
+          case 'position_jitter':
+            element.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+            break;
+          case 'character_corruption':
+            const corrupted = this.corruptText(element.textContent);
+            element.textContent = corrupted;
+            setTimeout(() => {
+              element.textContent = element.dataset.original || element.textContent;
+            }, effect.duration);
+            break;
+          case 'static_replacement':
+            element.textContent = '█'.repeat(element.textContent.length);
+            setTimeout(() => {
+              element.textContent = element.dataset.original || element.textContent;
+            }, effect.duration / 2);
+            break;
+        }
+      }
+      
+      applyGlitchContainer(effects) {
+        const container = this.poetryContent;
+        
+        if (effects.scanlineStyle === 'heavy') {
+          container.classList.add('heavy-scanlines');
+        }
+        
+        if (effects.colorSeparation) {
+          container.classList.add('color-separation');
+        }
+      }
+      
+      addCompletionEffects() {
+        this.poetryContent.classList.add('transmission-complete');
+        setTimeout(() => {
+          this.poetryContent.classList.remove('transmission-complete');
+        }, 1000);
+      }
+      
+      corruptText(text) {
+        const corruption = '█▓▒░▫▪◦●◯⬜⬛✧';
+        return text.split('').map(char => 
+          Math.random() < 0.3 ? corruption[Math.floor(Math.random() * corruption.length)] : char
+        ).join('');
+      }
+      
+      handleError(data) {
+        this.isGenerating = false;
+        this.generateBtn.disabled = false;
+        this.generateBtn.textContent = 'Generate Poetry';
+        
+        this.poetryContent.innerHTML = `
+          <div class="error-message">
+            <span class="error-icon">⚠️</span>
+            <span class="error-text">${data.error}</span>
+            ${data.retry ? '<div class="error-retry">Please try again</div>' : ''}
+          </div>
+        `;
+      }
+    }
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new PoetryInterface();
+    });
+
+  style.
+    .poetry-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a0a 100%);
+      color: #fff;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .poetry-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .glitch-title {
+      font-size: 3rem;
+      background: linear-gradient(45deg, var(--poetry-accent, #ff1493), #00ffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px var(--poetry-glow, rgba(255, 20, 147, 0.5));
+      margin-bottom: 1rem;
+      animation: pulse-glow 3s infinite;
+    }
+    
+    .poetry-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #666;
+      transition: all 0.3s ease;
+    }
+    
+    .status-indicator.connected {
+      background: #00ff00;
+      box-shadow: 0 0 10px #00ff00;
+      animation: pulse 2s infinite;
+    }
+    
+    .poetry-interface {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .style-selection {
+      margin-bottom: 2rem;
+    }
+    
+    .style-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .style-btn {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .style-btn:hover, .style-btn.active {
+      background: var(--poetry-accent, #ff1493);
+      border-color: var(--poetry-accent, #ff1493);
+      box-shadow: 0 0 15px var(--poetry-glow, rgba(255, 20, 147, 0.3));
+    }
+    
+    .poetry-controls {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .generate-button {
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, var(--poetry-accent, #ff1493), #c084fc);
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .generate-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--poetry-glow, rgba(255, 20, 147, 0.4));
+    }
+    
+    .generate-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .poetry-display {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--poetry-accent, #ff1493);
+      border-radius: 8px;
+      padding: 2rem;
+      min-height: 300px;
+      position: relative;
+    }
+    
+    .transmission-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .poetry-content {
+      line-height: 1.8;
+      font-size: 1.1rem;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    .placeholder-text {
+      text-align: center;
+      opacity: 0.6;
+      font-style: italic;
+    }
+    
+    .poetry-word {
+      display: inline;
+      transition: all 0.3s ease;
+    }
+    
+    .glitch-word {
+      animation: glitch 0.3s ease-in-out;
+    }
+    
+    .heavy-scanlines {
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 20, 147, 0.1) 2px,
+        rgba(255, 20, 147, 0.1) 4px
+      );
+    }
+    
+    .color-separation {
+      text-shadow: 
+        2px 0 rgba(255, 0, 0, 0.5),
+        -2px 0 rgba(0, 255, 255, 0.5);
+    }
+    
+    .transmission-complete {
+      animation: completion-glow 1s ease-out;
+    }
+    
+    .poetry-metadata {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    .metadata-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .error-message {
+      text-align: center;
+      color: #ff6b6b;
+      padding: 2rem;
+    }
+    
+    .error-icon {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { text-shadow: 2px 2px 4px var(--poetry-glow, rgba(255, 20, 147, 0.5)); }
+      50% { text-shadow: 0 0 20px var(--poetry-glow, rgba(255, 20, 147, 0.8)); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+    }
+    
+    @keyframes completion-glow {
+      0% { box-shadow: inset 0 0 0 var(--poetry-glow, rgba(255, 20, 147, 0.3)); }
+      50% { box-shadow: inset 0 0 50px var(--poetry-glow, rgba(255, 20, 147, 0.6)); }
+      100% { box-shadow: inset 0 0 0 var(--poetry-glow, rgba(255, 20, 147, 0.3)); }
+    }
+    
+    @media (max-width: 768px) {
+      .poetry-container {
+        padding: 1rem;
+      }
+      
+      .glitch-title {
+        font-size: 2rem;
+      }
+      
+      .style-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .transmission-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }

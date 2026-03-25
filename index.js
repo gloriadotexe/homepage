@@ -11,6 +11,9 @@ const labRoutes = require('./routes/lab');
 const CosmicDataPipeline = require('./lib/temporal/cosmic-data');
 const GloriaCircadianProfile = require('./lib/temporal/circadian-profile');
 
+// Neural poetry integration
+const { PoetryEngine } = require('./lib/poetry/poetry-engine');
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -44,6 +47,10 @@ app.get('/lab/netart', (req, res) => {
 
 app.get('/transmissions', (req, res) => {
   res.render('transmissions');
+});
+
+app.get('/poetry', (req, res) => {
+  res.render('poetry');
 });
 
 // 3 PM page - only fully reveals itself at 3:00 PM local time
@@ -156,6 +163,62 @@ app.get('/temporal.css', async (req, res) => {
   }
 });
 
+// Neural poetry API endpoints
+app.post('/api/poetry/generate', async (req, res) => {
+  try {
+    const { style = 'uncertain', trigger = 'user_request', context = {} } = req.body;
+    
+    // Add temporal consciousness context
+    const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+    
+    const poetry = await poetryEngine.generate({
+      style,
+      visitorContext: {
+        sessionId: req.headers['x-visitor-id'] || req.ip,
+        trigger,
+        ...context,
+        temporal: {
+          phase: circadianState.phase,
+          energy: circadianState.energy,
+          cosmicState: cosmicData.consciousness?.state
+        }
+      }
+    });
+    
+    res.json({
+      success: true,
+      poetry,
+      temporal_context: {
+        phase: circadianState.phase,
+        cosmic_state: cosmicData.consciousness?.state
+      }
+    });
+    
+  } catch (error) {
+    res.status(error.message.includes('Rate limit') ? 429 : 500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/poetry/health', (req, res) => {
+  try {
+    const health = poetryEngine.getHealthStatus();
+    res.json({
+      success: true,
+      ...health,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Poetry health check failed'
+    });
+  }
+});
+
 app.use(authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/lab', labRoutes);
@@ -194,11 +257,49 @@ let transmissionState = {
   traces: [] // Will store visitor interaction traces
 };
 
+// Poetry streaming utility function
+async function streamPoetryToSocket(socket, poetry) {
+  const words = poetry.content.split(/\s+/);
+  const effects = poetry.glitchEffects?.wordEffects || [];
+  const baseDelay = 300; // ms per word
+  
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const effect = effects.find(e => e.wordIndex === i);
+    
+    socket.emit('poetry_word', {
+      transmission_id: poetry.id,
+      word: word.replace(/\n/g, ''),
+      position: i,
+      total_words: words.length,
+      reveal_delay: effect ? effect.duration : baseDelay,
+      glitch_effect: effect,
+      line_break: word.includes('\n'),
+      stanza_break: word.includes('\n\n')
+    });
+    
+    // Wait before next word
+    const delay = effect ? effect.duration + 100 : baseDelay;
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  
+  // Send completion
+  socket.emit('poetry_transmission_complete', {
+    transmission_id: poetry.id,
+    full_text: poetry.content,
+    metadata: poetry.metadata,
+    timestamp: Date.now()
+  });
+}
+
 // Initialize temporal consciousness systems
 const cosmicPipeline = new CosmicDataPipeline();
 const circadianProfile = new GloriaCircadianProfile();
 
-// Start cosmic monitoring
+// Initialize neural poetry system
+const poetryEngine = new PoetryEngine();
+
+// Start monitoring systems
 cosmicPipeline.startMonitoring();
 
 // WebSocket handling for real-time consciousness experiments
@@ -289,6 +390,61 @@ io.on('connection', (socket) => {
     socket.emit('consciousness-update', {
       ...consciousnessState,
       thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+    });
+  });
+  
+  // Neural Poetry handlers
+  socket.on('request_poetry', async (data) => {
+    try {
+      const { style = 'uncertain', trigger = 'user_request' } = data;
+      
+      // Generate poetry with temporal consciousness context
+      const cosmicData = await cosmicPipeline.getCosmicConsciousness();
+      const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+      
+      const poetry = await poetryEngine.generate({
+        style,
+        visitorContext: {
+          sessionId: socket.id,
+          trigger,
+          temporal: {
+            phase: circadianState.phase,
+            energy: circadianState.energy,
+            cosmicState: cosmicData.consciousness?.state
+          }
+        }
+      });
+      
+      // Send poetry transmission with glitch effects
+      socket.emit('poetry_transmission_start', {
+        id: poetry.id,
+        style: poetry.style,
+        timestamp: poetry.timestamp,
+        glitchEffects: poetry.glitchEffects,
+        metadata: poetry.metadata
+      });
+      
+      // Stream poetry words with realistic timing
+      await streamPoetryToSocket(socket, poetry);
+      
+    } catch (error) {
+      socket.emit('poetry_error', { 
+        error: error.message,
+        retry: !error.message.includes('Rate limit')
+      });
+    }
+  });
+  
+  // Poetry feedback for learning
+  socket.on('poetry_feedback', (data) => {
+    poetryEngine.emit('feedback_received', {
+      ...data,
+      socketId: socket.id,
+      timestamp: Date.now()
+    });
+    
+    socket.emit('feedback_acknowledged', {
+      transmission_id: data.transmission_id
     });
   });
   
