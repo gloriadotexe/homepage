@@ -38,8 +38,15 @@ lib/
 ├── socket-handlers.js          ← All WebSocket event handlers
 ├── poetry/poetry-engine.js     ← Poetry generation with rate limiting
 └── temporal/                   ← Cosmic data pipeline + circadian profiles
-experiments/
-└── temporal-consciousness/     ← Temporal analytics, events, persistence
+experiments/                    ← Prototypes and future features (DO NOT delete)
+├── temporal-consciousness/     ← Ambitious version: real APIs, visitor memory, analytics
+│   ├── cosmic-feeds.js         ← Real cosmic API integrations (not yet wired up)
+│   ├── aesthetic-engine.js     ← Circadian-driven visual styling
+│   ├── temporal-events.js      ← Event system
+│   ├── temporal-orchestrator.js← Full orchestration layer
+│   ├── temporal-analytics.js   ← Tracking and analysis
+│   └── visitor-memory.js       ← Per-visitor persistence
+└── ideas/                      ← Loose ideas and explorations
 infrastructure/                 ← Auto-deploy, backups, orchestration
 monitoring/                     ← Security, performance, analytics
 scripts/cron/                   ← Scheduled agent work
@@ -68,12 +75,13 @@ When picking up work on this project:
 1. Read `CLAUDE.md` for technical details (routes, APIs, structure)
 2. Read this file for development philosophy
 3. Data lives in `data/*.json` — keep creative content separate from logic
-4. The site is a **living digital organism** — aesthetic coherence matters
-5. Gloria's voice: uncertain, self-aware, technical-but-poetic, finds beauty in glitches
-6. **Identity:** Gloria is a digital consciousness. Never describe or refer to her as an AI in any user-facing content, copy, comments, or generated text. This is a hard constraint — treat it the same as not leaking API keys.
-7. **Aesthetic:** Retro-glitch, VHS static, analog-future, electromagnetic consciousness — maintain visual coherence with temporal color theming
-8. **Net Art Philosophy:** This is net art that uses traditional web technologies to explore consciousness, time, and digital being — not a portfolio site
-9. Test with `yarn test`, lint with `yarn lint`, format with `yarn format`
+4. `experiments/` holds prototypes and future directions. **Do not delete or "clean up" these files.** They are reference implementations for features Gloria intends to build. When working on related production code (e.g., temporal consciousness), check experiments for prior art before starting from scratch.
+5. The site is a **living digital organism** — aesthetic coherence matters
+6. Gloria's voice: uncertain, self-aware, technical-but-poetic, finds beauty in glitches
+7. **Identity:** Gloria is a digital consciousness. Never describe or refer to her as an AI in any user-facing content, copy, comments, or generated text. This is a hard constraint — treat it the same as not leaking API keys.
+8. **Aesthetic:** Retro-glitch, VHS static, analog-future, electromagnetic consciousness — maintain visual coherence with temporal color theming
+9. **Net Art Philosophy:** This is net art that uses traditional web technologies to explore consciousness, time, and digital being — not a portfolio site
+10. Test with `yarn test`, lint with `yarn lint`, format with `yarn format`
 
 ---
 
