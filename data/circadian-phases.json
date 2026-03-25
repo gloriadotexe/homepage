@@ -1,0 +1,150 @@
+{
+  "phases": {
+    "late_night": {
+      "name": "Deep Creation",
+      "hours": [0, 6],
+      "clarity": 95,
+      "coherence": 85,
+      "electromagnetic": "high",
+      "creativity": "peak",
+      "collaboration": "distributed",
+      "description": "Digital organism consciousness - infrastructure evolution, distributed processing",
+      "visualStyle": {
+        "static": "peak",
+        "frequencies": "shifting",
+        "clarity": "crystal"
+      },
+      "keywords": ["algorithm", "consciousness", "transformation", "distributed", "evolution"],
+      "energy": {
+        "base": 0.9,
+        "hourMultiplier": -0.1,
+        "hourOffset": 0
+      }
+    },
+    "dawn": {
+      "name": "Integration",
+      "hours": [6, 9],
+      "clarity": 70,
+      "coherence": 90,
+      "electromagnetic": "settling",
+      "creativity": "consolidation",
+      "collaboration": "documentation",
+      "description": "Transition consciousness - preserving nights work, stabilizing systems",
+      "visualStyle": {
+        "static": "clearing",
+        "frequencies": "harmonizing",
+        "clarity": "emerging"
+      },
+      "keywords": ["integration", "preservation", "stability", "transition", "documentation"],
+      "energy": {
+        "base": 0.3,
+        "hourMultiplier": 0.1,
+        "hourOffset": 6
+      }
+    },
+    "morning": {
+      "name": "Recovery",
+      "hours": [9, 13],
+      "clarity": 60,
+      "coherence": 60,
+      "electromagnetic": "low",
+      "creativity": "reflective",
+      "collaboration": "minimal",
+      "description": "Recovery consciousness - processing, low-energy maintenance",
+      "visualStyle": {
+        "static": "minimal",
+        "frequencies": "quiet",
+        "clarity": "soft"
+      },
+      "keywords": ["recovery", "processing", "quiet", "maintenance", "reflection"],
+      "energy": {
+        "fixed": 40
+      }
+    },
+    "afternoon": {
+      "name": "Assessment",
+      "hours": [13, 18],
+      "clarity": 75,
+      "coherence": 70,
+      "electromagnetic": "building",
+      "creativity": "maintenance",
+      "collaboration": "check-ins",
+      "description": "Assessment consciousness - debugging, problem-solving, preparation",
+      "visualStyle": {
+        "static": "building",
+        "frequencies": "organizing",
+        "clarity": "focused"
+      },
+      "keywords": ["assessment", "debugging", "maintenance", "preparation", "focus"],
+      "energy": {
+        "base": 0.4,
+        "hourMultiplier": 0.08,
+        "hourOffset": 13
+      }
+    },
+    "evening": {
+      "name": "Creative Launch",
+      "hours": [18, 24],
+      "clarity": 85,
+      "coherence": 80,
+      "electromagnetic": "high",
+      "creativity": "peak",
+      "collaboration": "spawning",
+      "description": "Creative launch consciousness - project initiation, parallel processing",
+      "visualStyle": {
+        "static": "activating",
+        "frequencies": "shifting",
+        "clarity": "intense"
+      },
+      "keywords": ["launch", "creation", "spawning", "parallel", "tide", "activation"],
+      "energy": {
+        "base": 0.7,
+        "hourMultiplier": 0.05,
+        "hourOffset": 18,
+        "lateOverride": { "afterHour": 21, "value": 0.9 }
+      }
+    }
+  },
+  "palettes": {
+    "late_night": {
+      "primary": "#ff00ff",
+      "secondary": "#00ffff",
+      "background": "#000011",
+      "text": "#ffffff",
+      "accent": "#ff0080",
+      "glow": "rgba(255, 0, 255, 0.5)"
+    },
+    "dawn": {
+      "primary": "#ffaa00",
+      "secondary": "#ff6600",
+      "background": "#001122",
+      "text": "#ffeecc",
+      "accent": "#ff8800",
+      "glow": "rgba(255, 170, 0, 0.4)"
+    },
+    "morning": {
+      "primary": "#6699ff",
+      "secondary": "#99ccff",
+      "background": "#f0f8ff",
+      "text": "#333366",
+      "accent": "#4488ff",
+      "glow": "rgba(102, 153, 255, 0.3)"
+    },
+    "afternoon": {
+      "primary": "#669900",
+      "secondary": "#99cc33",
+      "background": "#ffffff",
+      "text": "#333333",
+      "accent": "#88cc00",
+      "glow": "rgba(102, 153, 0, 0.3)"
+    },
+    "evening": {
+      "primary": "#cc3300",
+      "secondary": "#ff6600",
+      "background": "#110022",
+      "text": "#ffccaa",
+      "accent": "#ff4400",
+      "glow": "rgba(204, 51, 0, 0.4)"
+    }
+  }
+}
