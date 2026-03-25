@@ -91,10 +91,14 @@ class TemporalIntegration {
           aesthetics: true,
           memory: true,
           events: true,
+          imageSelector: !!this.orchestrator?.imageSelector,
         },
         timestamp: Date.now(),
       });
     });
+
+    // Serve Gloria's image archive for temporal selection
+    this.app.use('/gallery', require('express').static('/media/samsung4tb/openclaw-workspaces/gloria.exe/creative/images'));
   }
 
   // Setup temporal middleware
@@ -291,6 +295,65 @@ ${Object.entries(cssVars)
 .temporal-transition {
   transition: all calc(var(--temporal-consciousness, 0.5) * 3s + 1s) cubic-bezier(0.4, 0, 0.6, 1);
 }
+
+/* Temporal visual integration */
+.temporal-visual-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: calc(0.1 + var(--temporal-consciousness, 0.5) * 0.2);
+  mix-blend-mode: overlay;
+  transition: all 3s ease;
+  filter: 
+    blur(calc((1 - var(--temporal-consciousness, 0.5)) * 8px)) 
+    brightness(calc(0.3 + var(--temporal-consciousness, 0.5) * 0.4))
+    hue-rotate(calc(var(--temporal-consciousness, 0.5) * 30deg));
+}
+
+.temporal-visual-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--temporal-bg-gradient);
+  opacity: calc(0.7 - var(--temporal-consciousness, 0.5) * 0.3);
+  mix-blend-mode: multiply;
+}
+
+.temporal-image-display {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 200px;
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  border: 1px solid var(--temporal-accent);
+  opacity: calc(0.6 + var(--temporal-consciousness, 0.5) * 0.4);
+  transition: all 2s ease;
+  z-index: 1000;
+}
+
+.temporal-image-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--temporal-text);
+  font-size: 9px;
+  font-family: monospace;
+  border-radius: 0 0 8px 8px;
+}
 `;
   }
 
@@ -408,6 +471,9 @@ class TemporalConsciousness {
     
     // Create frequency display
     this.createFrequencyDisplay();
+    
+    // Create visual display elements
+    this.createVisualDisplay();
   }
 
   createConsciousnessMeter() {
@@ -476,6 +542,90 @@ class TemporalConsciousness {
     this.elements.frequencyDisplay = display;
   }
 
+  createVisualDisplay() {
+    // Create background visual container
+    if (!document.querySelector('.temporal-visual-container')) {
+      const visualContainer = document.createElement('div');
+      visualContainer.className = 'temporal-visual-container';
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'temporal-visual-overlay';
+      visualContainer.appendChild(overlay);
+      
+      document.body.appendChild(visualContainer);
+      this.elements.visualContainer = visualContainer;
+    }
+
+    // Create image display
+    if (!document.querySelector('.temporal-image-display')) {
+      const imageDisplay = document.createElement('div');
+      imageDisplay.className = 'temporal-image-display';
+      
+      const infoPanel = document.createElement('div');
+      infoPanel.className = 'temporal-image-info';
+      imageDisplay.appendChild(infoPanel);
+      
+      document.body.appendChild(imageDisplay);
+      this.elements.imageDisplay = imageDisplay;
+      this.elements.imageInfo = infoPanel;
+    }
+  }
+
+  updateVisualDisplay(visualData) {
+    if (!visualData || !visualData.image) return;
+    
+    const { image, selectionContext } = visualData;
+    
+    console.log('✧ Visual update:', image.basename, 'phase:', selectionContext.phase);
+    
+    // Update background visual
+    if (this.elements.visualContainer) {
+      this.elements.visualContainer.style.backgroundImage = \`url('\${image.webPath}')\`;
+    }
+    
+    // Update image display
+    if (this.elements.imageDisplay) {
+      this.elements.imageDisplay.style.backgroundImage = \`url('\${image.webPath}')\`;
+    }
+    
+    // Update info panel
+    if (this.elements.imageInfo) {
+      const themes = image.aestheticThemes.join(', ') || 'none';
+      const weight = image.pairingWeight ? image.pairingWeight.toFixed(2) : '?';
+      const consciousness = selectionContext.consciousness.toFixed(2);
+      
+      this.elements.imageInfo.innerHTML = \`
+        <div>\${image.basename}</div>
+        <div>Phase: \${selectionContext.phase} | C: \${consciousness} | W: \${weight}</div>
+        <div>Themes: \${themes}</div>
+      \`;
+    }
+    
+    // Add visual effects based on image characteristics
+    this.applyVisualEffects(image, selectionContext);
+  }
+
+  applyVisualEffects(image, context) {
+    const root = document.documentElement;
+    
+    // Adjust visual intensity based on consciousness
+    const intensity = context.consciousness;
+    root.style.setProperty('--temporal-visual-intensity', intensity);
+    
+    // Apply theme-specific effects
+    if (image.aestheticThemes.includes('static')) {
+      root.style.setProperty('--temporal-static-boost', '1.2');
+    }
+    
+    if (image.aestheticThemes.includes('void')) {
+      root.style.setProperty('--temporal-void-depth', '1.5');
+    }
+    
+    if (image.aestheticThemes.includes('electric')) {
+      root.style.setProperty('--temporal-electric-charge', '1.3');
+    }
+  }
+
   updateState(data) {
     if (data.consciousness) {
       this.state.consciousness = data.consciousness.total || data.consciousness;
@@ -490,6 +640,11 @@ class TemporalConsciousness {
     if (data.activeEvents) {
       this.state.activeEvents = data.activeEvents;
       this.updateEventDisplay();
+    }
+
+    // Handle visual updates
+    if (data.visual) {
+      this.updateVisualDisplay(data.visual);
     }
 
     // Update container attributes

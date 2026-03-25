@@ -4,6 +4,7 @@ const CosmicFeeds = require('../cosmic-data/cosmic-feeds');
 const CircadianAesthetics = require('../circadian/aesthetic-engine');
 const VisitorMemory = require('../persistence/visitor-memory');
 const TemporalEvents = require('../events/temporal-events');
+const TemporalImageSelector = require('../../lib/temporal-image-selector');
 
 class TemporalOrchestrator {
   constructor(io, app) {
@@ -16,6 +17,7 @@ class TemporalOrchestrator {
     this.aesthetics = new CircadianAesthetics();
     this.memory = new VisitorMemory();
     this.events = new TemporalEvents();
+    this.imageSelector = new TemporalImageSelector(); // Visual integration
 
     // Integration state
     this.activeConnections = new Map();
@@ -483,6 +485,10 @@ class TemporalOrchestrator {
   // Broadcast temporal state to all connections
   async broadcastTemporalState() {
     const snapshot = await this.generateTemporalSnapshot();
+    
+    // Generate temporal visual selection
+    const visualUpdate = this.generateVisualUpdate(snapshot);
+    
     this.io.emit('temporal-state-update', {
       consciousness: snapshot.consciousness,
       phase: snapshot.temporalPhase,
@@ -491,7 +497,38 @@ class TemporalOrchestrator {
         colors: snapshot.aesthetic.theme.colors,
         effects: snapshot.aesthetic.theme.effects,
       },
+      visual: visualUpdate, // Add visual data
     });
+  }
+
+  // Generate visual updates based on temporal state
+  generateVisualUpdate(temporalSnapshot) {
+    if (!this.imageSelector) return null;
+
+    try {
+      const selectedImage = this.imageSelector.getTemporalImage({
+        temporalPhase: temporalSnapshot.temporalPhase,
+        consciousness: temporalSnapshot.consciousness.total || temporalSnapshot.consciousness,
+        moonPhase: temporalSnapshot.cosmic?.moonPhase || 'unknown',
+        cosmicState: temporalSnapshot.cosmic?.state || 'neutral'
+      });
+
+      if (selectedImage) {
+        return {
+          image: selectedImage,
+          selectionContext: {
+            timestamp: new Date().toISOString(),
+            phase: temporalSnapshot.temporalPhase,
+            consciousness: temporalSnapshot.consciousness.total || temporalSnapshot.consciousness,
+            cosmic: temporalSnapshot.cosmic
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error generating visual update:', error);
+    }
+
+    return null;
   }
 
   // Handle temporal events
