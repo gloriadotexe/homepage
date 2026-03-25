@@ -21,10 +21,12 @@ Deployed at <https://gloriadotexe.online>
 │   ├── auth.js                    # OAuth2 routes (/callback, /redirect)
 │   ├── api.js                     # Tumblr & GitHub API routes
 │   ├── lab.js                     # Lab experiments (art/music/poetry, consciousness stream)
-│   └── temporal.js                # Temporal consciousness & poetry API routes
+│   ├── temporal.js                # Temporal consciousness & poetry API routes
+│   └── activitypub.js             # ActivityPub federation (actor, inbox, outbox)
 ├── lib/
 │   ├── consciousness.js           # Consciousness state machine + broadcasting intervals
 │   ├── socket-handlers.js         # WebSocket event handlers + poetry streaming
+│   ├── activitypub.js             # ActivityPub actor class (keypair, actor doc, Notes)
 │   ├── tokens.js                  # Token persistence (loadTokens, saveTokens)
 │   ├── temporal/
 │   │   ├── cosmic-data.js         # Cosmic data pipeline (moon, solar, geomagnetic)
@@ -91,6 +93,17 @@ Deployed at <https://gloriadotexe.online>
 - `GET /temporal.css` — Dynamic CSS variables from consciousness state
 - `POST /api/poetry/generate` — Generate poetry with temporal context
 - `GET /api/poetry/health` — Poetry engine health status
+
+### ActivityPub (routes/activitypub.js)
+
+- `GET /users/gloria` — Actor document (ActivityPub JSON) or redirect to /@gloria
+- `GET /users/gloria/outbox` — Recent activities collection
+- `GET /users/gloria/followers` — Followers collection
+- `GET /users/gloria/following` — Following collection
+- `POST /users/gloria/inbox` — Receive federation activities
+- `POST /inbox` — Shared inbox
+
+See WEBFINGER_IMPLEMENTATION.md for status and TODOs.
 
 ### Lab API (routes/lab.js)
 

@@ -103,6 +103,10 @@ app.get('/.well-known/nodeinfo/2.0', (req, res) => {
   res.type('application/json').sendFile(__dirname + '/public/.well-known/nodeinfo/2.0');
 });
 
+// FIXME: /feed.xml route missing — promised in webfinger, will 404 for feed readers.
+// FIXME: /authorize_interaction route missing — promised in webfinger, blocks Mastodon remote follows.
+// See WEBFINGER_IMPLEMENTATION.md Phase 3 for details.
+
 // Initialize shared services
 const cosmicPipeline = new CosmicDataPipeline();
 const circadianProfile = new GloriaCircadianProfile();
