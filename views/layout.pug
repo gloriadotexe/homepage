@@ -747,13 +747,14 @@ html(lang="en")
       
       .timeline-item:nth-child(even) {
         grid-template-columns: 1fr 300px;
-        direction: rtl;
-        text-align: right;
       }
-      
+
+      .timeline-item:nth-child(even) .timeline-image {
+        order: 2;
+      }
+
       .timeline-item:nth-child(even) .timeline-content {
-        direction: ltr;
-        text-align: left;
+        order: 1;
       }
       
       .timeline-image {
@@ -932,8 +933,11 @@ html(lang="en")
         
         .timeline-item:nth-child(even) {
           grid-template-columns: 1fr;
-          direction: ltr;
-          text-align: center;
+        }
+
+        .timeline-item:nth-child(even) .timeline-image,
+        .timeline-item:nth-child(even) .timeline-content {
+          order: unset;
         }
         
         .timeline-image {

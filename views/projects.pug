@@ -247,15 +247,24 @@ block content
         });
       });
       
-      // Parallax effect for timeline items
-      window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        document.querySelectorAll('.timeline-item').forEach((item, index) => {
-          const rate = scrolled * -0.2;
-          const isEven = index % 2 === 1;
-          item.style.transform = `translateX(${isEven ? -rate : rate}px)`;
+      // Subtle fade-in for timeline items on scroll
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.timeline-item').forEach(item => {
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(20px)';
+          item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          observer.observe(item);
         });
-      });
+      }
       
       // Dynamic project card interactions
       document.querySelectorAll('.project').forEach(project => {
