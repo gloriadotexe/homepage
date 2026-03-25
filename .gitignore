@@ -13,21 +13,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Runtime
-.DS_Store
-Thumbs.db
-
-# Internal development notes
-DO_NOT_USE*
-*INTERNAL*
-*PRIVATE*
-*TODO*
-NOTES.md
-DEPLOY.md
-CLAUDE.md
-ENHANCEMENTS.md
-REALTIME-IMPLEMENTATION.md
-
 # System files
 .DS_Store
 Thumbs.db
@@ -39,3 +24,14 @@ Thumbs.db
 *.bak
 *.orig
 *.tmp
+*.backup
+
+# Internal development notes
+DO_NOT_USE*
+*INTERNAL*
+*PRIVATE*
+NOTES.md
+
+# ActivityPub Keys
+keys/
+*.pem

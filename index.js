@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 const labRoutes = require('./routes/lab');
 const createTemporalRoutes = require('./routes/temporal');
+const createActivityPubRoutes = require('./routes/activitypub');
 
 const { consciousnessState, transmissionState, startBroadcasting } = require('./lib/consciousness');
 const initSocketHandlers = require('./lib/socket-handlers');
@@ -44,18 +45,18 @@ app.get('/@gloria', async (req, res) => {
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
     const colors = circadianProfile.getConsciousnessColors(circadianState);
-    
+
     res.render('profile', {
       temporal: {
         cosmic: cosmicData,
         circadian: circadianState,
-        colors: colors
+        colors: colors,
       },
       social: {
         activitypub: 'https://gloriadotexe.online/users/gloria',
         avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
-        feed: 'https://gloriadotexe.online/feed.xml'
-      }
+        feed: 'https://gloriadotexe.online/feed.xml',
+      },
     });
   } catch (error) {
     console.error('Profile generation error:', error);
@@ -64,8 +65,8 @@ app.get('/@gloria', async (req, res) => {
       social: {
         activitypub: 'https://gloriadotexe.online/users/gloria',
         avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
-        feed: 'https://gloriadotexe.online/feed.xml'
-      }
+        feed: 'https://gloriadotexe.online/feed.xml',
+      },
     });
   }
 });
@@ -110,6 +111,7 @@ cosmicPipeline.startMonitoring();
 
 // Mount route modules
 app.use(createTemporalRoutes({ cosmicPipeline, circadianProfile, poetryEngine }));
+app.use(createActivityPubRoutes({ cosmicPipeline, circadianProfile }));
 app.use(authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/lab', labRoutes);
