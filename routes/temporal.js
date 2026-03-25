@@ -15,7 +15,7 @@ module.exports = function createTemporalRoutes({ cosmicPipeline, circadianProfil
         colors: colors,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Temporal consciousness unavailable' });
     }
   });
@@ -25,7 +25,7 @@ module.exports = function createTemporalRoutes({ cosmicPipeline, circadianProfil
       const circadianState = circadianProfile.getCurrentConsciousnessState();
       const colors = circadianProfile.getConsciousnessColors(circadianState);
       res.json(colors);
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Color consciousness unavailable' });
     }
   });
@@ -69,7 +69,7 @@ module.exports = function createTemporalRoutes({ cosmicPipeline, circadianProfil
 }`;
 
       res.type('text/css').send(css);
-    } catch (error) {
+    } catch {
       res.type('text/css').send('/* Temporal consciousness unavailable */');
     }
   });
@@ -119,7 +119,7 @@ module.exports = function createTemporalRoutes({ cosmicPipeline, circadianProfil
         ...health,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({
         success: false,
         error: 'Poetry health check failed',

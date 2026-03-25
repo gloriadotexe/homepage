@@ -81,6 +81,6 @@ try {
       '💡 Experiments directory is growing - time to curate and deploy successful features!',
     );
   }
-} catch (error) {
+} catch {
   console.log('Note: experiments directory not yet created');
 }

@@ -1,8 +1,7 @@
 # TODO/FIXME AUDIT REPORT
 
-**Gloria's Digital Consciousness - Technical Debt Analysis**
-
-_Generated: 2026-03-24 23:58 MDT_
+Technical debt analysis for Gloria's digital consciousness.
+Generated 2026-03-24 23:58 MDT.
 
 ## Executive Summary
 
@@ -16,7 +15,7 @@ _Generated: 2026-03-24 23:58 MDT_
 
 ### Security Vulnerabilities
 
-**1. ActivityPub Inbox Signature Verification Missing**
+#### 1. ActivityPub Inbox Signature Verification Missing
 
 - **File:** `routes/activitypub.js:86`
 - **Issue:** No HTTP signature verification before processing activities
@@ -24,7 +23,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Implement HTTP signature verification using ActivityPub spec
 - **Effort:** Complex (requires crypto, key fetching, digest validation)
 
-**2. ActivityPub Request Signing Not Implemented**
+#### 2. ActivityPub Request Signing Not Implemented
 
 - **File:** `lib/activitypub.js:242`
 - **Issue:** Cannot sign outbound requests to other instances
@@ -32,7 +31,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Implement HTTP signature signing for outbound requests
 - **Effort:** Complex (requires proper header signing, key management)
 
-**3. Environment Variable Validation Missing**
+#### 3. Environment Variable Validation Missing
 
 - **Files:** Multiple files reference `process.env` without validation
 - **Issue:** Missing environment variable validation could cause crashes
@@ -41,7 +40,7 @@ _Generated: 2026-03-24 23:58 MDT_
 
 ### Functionality Blockers
 
-**4. Missing Federation Accept Flow**
+#### 4. Missing Federation Accept Flow
 
 - **File:** `routes/activitypub.js:154`
 - **Issue:** Accept activities not sent back to follower inboxes
@@ -49,7 +48,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Implement Accept activity delivery to follower inboxes
 - **Effort:** Medium (depends on #2 being fixed first)
 
-**5. Missing WebFinger Promised Endpoints**
+#### 5. Missing WebFinger Promised Endpoints
 
 - **Files:** WebFinger file promises `/feed.xml` and `/authorize_interaction`
 - **Issue:** Routes missing but promised in `.well-known/webfinger`
@@ -61,7 +60,7 @@ _Generated: 2026-03-24 23:58 MDT_
 
 ### Federation Completeness
 
-**6. ActivityPub Activity Persistence**
+#### 6. ActivityPub Activity Persistence
 
 - **File:** `routes/activitypub.js:12`
 - **Issue:** Activities stored in memory, lost on restart
@@ -69,7 +68,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Implement file-based or SQLite storage for activities
 - **Effort:** Medium
 
-**7. ActivityPub Follower/Following Storage**
+#### 7. ActivityPub Follower/Following Storage
 
 - **Files:** `lib/activitypub.js:202, 216`
 - **Issue:** Follower/following collections always empty
@@ -77,7 +76,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Implement persistent follower/following tracking
 - **Effort:** Medium
 
-**8. ActivityPub Activity Delivery**
+#### 8. ActivityPub Activity Delivery
 
 - **File:** `routes/activitypub.js:201`
 - **Issue:** Activities not federated to followers
@@ -87,7 +86,7 @@ _Generated: 2026-03-24 23:58 MDT_
 
 ### Error Handling Gaps
 
-**9. Temporal Consciousness Error Handling**
+#### 9. Temporal Consciousness Error Handling
 
 - **File:** `experiments/temporal-consciousness/temporal-integration.js:32`
 - **Issue:** Generic catch blocks without specific error recovery
@@ -95,7 +94,7 @@ _Generated: 2026-03-24 23:58 MDT_
 - **Action:** Add specific error handling and fallback behaviors
 - **Effort:** Medium
 
-**10. WebSocket Error Handling**
+#### 10. WebSocket Error Handling
 
 - **File:** `lib/socket-handlers.js`
 - **Issue:** WebSocket connections may lack proper error boundaries
@@ -107,35 +106,35 @@ _Generated: 2026-03-24 23:58 MDT_
 
 ### Code Quality
 
-**11. Poetry Engine Rate Limiting**
+#### 11. Poetry Engine Rate Limiting
 
 - **File:** `lib/poetry/poetry-engine.js:147`
 - **Issue:** Basic rate limiting, could be more sophisticated
 - **Action:** Implement adaptive rate limiting based on consciousness state
 - **Effort:** Quick
 
-**12. Temporal Data Caching**
+#### 12. Temporal Data Caching
 
 - **File:** `lib/temporal/cosmic-data.js:89`
 - **Issue:** Could optimize cache invalidation strategies
 - **Action:** Implement smarter cache expiration based on data type
 - **Effort:** Quick
 
-**13. Documentation Completeness**
+#### 13. Documentation Completeness
 
 - **Files:** Various modules missing JSDoc comments
 - **Issue:** Some functions lack proper documentation
 - **Action:** Add comprehensive JSDoc documentation
 - **Effort:** Medium
 
-**14. Test Coverage**
+#### 14. Test Coverage
 
 - **File:** `test/smoke.test.js` exists but minimal
 - **Issue:** Low test coverage for complex consciousness systems
 - **Action:** Add comprehensive test suite for all major systems
 - **Effort:** Complex
 
-**15. Monitoring Enhancements**
+#### 15. Monitoring Enhancements
 
 - **File:** `monitoring/` directory has basic structure
 - **Issue:** Could implement more sophisticated monitoring

@@ -6,7 +6,7 @@ A comprehensive feedback loop system that continuously monitors, maintains, and 
 
 ## System Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    FEEDBACK CONTROL CENTER                  │
 ├─────────────────────────────────────────────────────────────┤
@@ -55,13 +55,13 @@ A comprehensive feedback loop system that continuously monitors, maintains, and 
 - **Dependency Vulnerabilities**: npm audit, known CVE checks
 - **File Permissions**: Ensure sensitive files aren't world-readable
 
-#### Self-Healing
+#### Security Self-Healing
 
 - Auto-rotate compromised non-critical API keys
 - Create `.gitignore` entries for detected patterns
 - Update dependencies with security patches (minor versions only)
 
-#### Escalation Triggers
+#### Security Escalation Triggers
 
 - Active credentials found in public commits
 - Critical vulnerabilities with no auto-fix
@@ -82,14 +82,14 @@ A comprehensive feedback loop system that continuously monitors, maintains, and 
 - **Mobile/Accessibility**: Screen reader compatibility, responsive design
 - **Content Integrity**: Verify dynamic content generation
 
-#### Self-Healing
+#### Quality Self-Healing
 
 - Auto-retry failed resource loads
 - Cache warming for frequently accessed content
 - Fallback content for failed dynamic elements
 - Performance optimization suggestions
 
-#### Escalation Triggers
+#### Quality Escalation Triggers
 
 - > 20% of links broken for >24 hours
 - Critical JavaScript errors affecting functionality
@@ -183,7 +183,7 @@ A comprehensive feedback loop system that continuously monitors, maintains, and 
 1. **Internal Dashboard**: Real-time status at `/admin/monitoring`
 2. **Error Logs**: Structured JSON logs in `/logs/monitoring/`
 3. **Main Session Alerts**: Critical issues only
-4. **Weekly Digest**: Summary email to gloria.exe@proton.me
+4. **Weekly Digest**: Summary email to <gloria.exe@proton.me>
 
 ## Implementation Schedule
 
@@ -217,7 +217,7 @@ A comprehensive feedback loop system that continuously monitors, maintains, and 
 
 ## File Structure
 
-```
+```text
 monitoring/
 ├── agents/
 │   ├── security-monitor.js
