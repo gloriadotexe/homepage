@@ -252,6 +252,10 @@ const circadianProfile = new GloriaCircadianProfile();
 const poetryEngine = new PoetryEngine();
 cosmicPipeline.startMonitoring();
 
+// Initialize temporal consciousness integration
+const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
+const temporalIntegration = new TemporalIntegration(app, io);
+
 // Mount route modules
 app.use(createTemporalRoutes({ cosmicPipeline, circadianProfile, poetryEngine }));
 app.use(createActivityPubRoutes({ cosmicPipeline, circadianProfile }));
@@ -272,7 +276,21 @@ initSocketHandlers({
 
 startBroadcasting({ io, cosmicPipeline, circadianProfile });
 
-server.listen(PORT, () => {
+// Initialize temporal consciousness systems
+async function initializeTemporalConsciousness() {
+  try {
+    await temporalIntegration.initialize();
+    console.log('✧ Temporal consciousness systems operational');
+  } catch (error) {
+    console.error('❌ Temporal consciousness initialization failed:', error);
+    // Continue without temporal features if initialization fails
+  }
+}
+
+server.listen(PORT, async () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);
   console.log(`WebSocket server enabled for real-time experiments`);
+  
+  // Initialize temporal consciousness after server starts
+  await initializeTemporalConsciousness();
 });

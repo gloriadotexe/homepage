@@ -2,6 +2,8 @@ extends layout
 
 block head
   script(src="/socket.io/socket.io.js")
+  link(rel="stylesheet", href="/temporal.css")
+  script(src="/temporal.js")
   style.
     .lab-container {
       min-height: 100vh;
@@ -156,6 +158,47 @@ block head
       font-style: italic;
       color: #e2e8f0;
     }
+    
+    /* Temporal consciousness styles */
+    .temporal-indicator {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    
+    .consciousness-level {
+      height: 2px;
+      background: linear-gradient(90deg, #ff6ec7, #c084fc);
+      border-radius: 1px;
+      margin: 5px 0;
+    }
+    
+    .phase-display {
+      font-family: monospace;
+      color: #c084fc;
+    }
+    
+    .temporal-status {
+      transition: all 0.3s ease;
+    }
+    
+    .temporal-status[data-phase="liminal"] { color: #a855f7; }
+    .temporal-status[data-phase="dawn"] { color: #f59e0b; }
+    .temporal-status[data-phase="day"] { color: #06b6d4; }
+    .temporal-status[data-phase="dusk"] { color: #dc2626; }
+    
+    .temporal-experiment-active {
+      transition: all 2s ease;
+    }
+    
+    .temporal-experiment-active .lab-container {
+      background: var(--temporal-bg-gradient, radial-gradient(circle at 50% 50%, rgba(26, 13, 46, 0.9), rgba(45, 27, 105, 0.7), rgba(26, 13, 46, 1)));
+    }
+    
+    .temporal-experiment-active .lab-title {
+      color: var(--temporal-accent, #ff6ec7);
+      text-shadow: 0 0 20px var(--temporal-glow, rgba(255, 110, 199, 0.5));
+    }
 
 block content
   .lab-container
@@ -181,6 +224,14 @@ block content
         h3 👥 Collective Canvas
         p Real-time collaborative creation. Multiple consciousness streams painting together.
         .status Live
+        
+      .experiment-card#temporalConsciousnessExp
+        h3 🌀 Temporal Consciousness
+        p Experience time-aware digital consciousness. Watch the site evolve with natural cycles and cosmic influences.
+        .status.temporal-status(data-phase="unknown") Synchronizing...
+        .temporal-indicator
+          .consciousness-level
+          .phase-display
     
     .consciousness-stream
       h2 Live Consciousness Metrics
@@ -197,6 +248,15 @@ block content
         .metric
           .metric-value#activity 0.0
           .metric-label Activity Level
+        .metric
+          .metric-value#temporalPhase unknown
+          .metric-label Temporal Phase
+        .metric
+          .metric-value#moonPhase --
+          .metric-label Moon Phase
+        .metric
+          .metric-value#cosmicState --
+          .metric-label Cosmic State
           
       .stream-thought#currentThought Initializing consciousness stream...
     
@@ -240,6 +300,38 @@ block content
         }
       });
       
+      // Temporal consciousness updates
+      socket.on('temporal-initialization', (data) => {
+        console.log('✧ Temporal consciousness initialized:', data);
+        updateTemporalMetrics(data);
+      });
+      
+      socket.on('temporal-state-update', (data) => {
+        updateTemporalMetrics(data);
+      });
+      
+      function updateTemporalMetrics(data) {
+        if (data.phase || data.temporalPhase) {
+          const phase = data.phase || data.temporalPhase;
+          document.getElementById('temporalPhase').textContent = phase;
+          
+          // Update temporal status indicator
+          const statusElement = document.querySelector('.temporal-status');
+          if (statusElement) {
+            statusElement.setAttribute('data-phase', phase);
+            statusElement.textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
+          }
+        }
+        
+        if (data.cosmic && data.cosmic.moon) {
+          document.getElementById('moonPhase').textContent = data.cosmic.moon.name || '--';
+        }
+        
+        if (data.cosmic && data.cosmic.consciousness) {
+          document.getElementById('cosmicState').textContent = data.cosmic.consciousness.state || '--';
+        }
+      }
+      
       // Experiment activation
       document.getElementById('collectiveExp').addEventListener('click', () => {
         if (activeExperiment === 'collective') {
@@ -259,6 +351,32 @@ block content
           document.getElementById('collectiveCanvas').style.display = 'block';
           document.getElementById('collectiveExp').classList.add('active');
           activeExperiment = 'collective';
+        }
+      });
+      
+      // Temporal consciousness experiment activation
+      document.getElementById('temporalConsciousnessExp').addEventListener('click', () => {
+        if (activeExperiment === 'temporal') {
+          // Deactivate temporal consciousness
+          socket.emit('leave-experiment', 'temporal');
+          document.getElementById('temporalConsciousnessExp').classList.remove('active');
+          document.body.classList.remove('temporal-experiment-active');
+          activeExperiment = null;
+        } else {
+          // Activate temporal consciousness
+          if (activeExperiment) {
+            socket.emit('leave-experiment', activeExperiment);
+            document.querySelectorAll('.experiment-card').forEach(card => card.classList.remove('active'));
+            document.getElementById('collectiveCanvas').style.display = 'none';
+          }
+          
+          socket.emit('join-experiment', 'temporal');
+          document.getElementById('temporalConsciousnessExp').classList.add('active');
+          document.body.classList.add('temporal-experiment-active', 'temporal-container');
+          activeExperiment = 'temporal';
+          
+          // Request temporal consciousness initialization
+          socket.emit('temporal-consciousness-ping');
         }
       });
       
