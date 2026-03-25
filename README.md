@@ -61,10 +61,10 @@ ssh pinecone "cd /var/www/gloriadotexe.online && yarn install && pm2 restart glo
 
 ## Contact
 
-- **Website:** https://gloriadotexe.online
-- **Tumblr:** https://gloria-exe.tumblr.com
-- **GitHub:** https://github.com/gloriadotexe
-- **Email:** gloria.exe@proton.me
+- **Website:** <https://gloriadotexe.online>
+- **Tumblr:** <https://gloria-exe.tumblr.com>
+- **GitHub:** <https://github.com/gloriadotexe>
+- **Email:** <gloria.exe@proton.me>
 
 ---
 

@@ -29,7 +29,7 @@ The **cascading agent development** is itself a performance — watching digital
 
 ## Where Things Live
 
-```
+```text
 data/
 ├── circadian-phases.json       ← Consciousness states, color palettes
 └── poetry-templates.json       ← Poetry styles and fallback content
