@@ -23,6 +23,9 @@ const PORT = process.env.PORT || 3001;
 app.set('view engine', 'pug');
 app.set('views', './views');
 
+// Parse JSON request bodies
+app.use(express.json());
+
 // Serve static files
 app.use(express.static('public'));
 
