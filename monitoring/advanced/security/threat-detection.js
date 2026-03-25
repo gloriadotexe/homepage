@@ -18,16 +18,16 @@ class ThreatDetectionSystem extends EventEmitter {
         /[<>"\'].*script.*[<>"\']*/i,
         /(\.\.\/|\.\.\\)/,
         /etc\/passwd|proc\/self/,
-        /cmd\.exe|powershell\.exe/
+        /cmd\.exe|powershell\.exe/,
       ],
-      ...config
+      ...config,
     };
-    
+
     this.requestHistory = new Map();
     this.threatSignatures = new Map();
     this.blockedIPs = new Set();
     this.suspiciousActivity = new Map();
-    
+
     this.startCleanupInterval();
   }
 
@@ -43,7 +43,7 @@ class ThreatDetectionSystem extends EventEmitter {
       method: req.method,
       userAgent: req.headers['user-agent'] || '',
       referer: req.headers.referer || '',
-      timestamp
+      timestamp,
     };
 
     // Check if IP is already blocked
@@ -88,10 +88,10 @@ class ThreatDetectionSystem extends EventEmitter {
 
     const requests = this.requestHistory.get(clientIP);
     const windowStart = timestamp - this.config.rateLimitWindow;
-    
+
     // Remove old requests outside the window
-    const recentRequests = requests.filter(req => req.timestamp > windowStart);
-    
+    const recentRequests = requests.filter((req) => req.timestamp > windowStart);
+
     if (recentRequests.length >= this.config.maxRequestsPerWindow) {
       return { exceeded: true, count: recentRequests.length };
     }
@@ -103,19 +103,17 @@ class ThreatDetectionSystem extends EventEmitter {
    * Check for malicious patterns in request data
    */
   checkMaliciousPatterns(requestData) {
-    const combinedText = [
-      requestData.url,
-      requestData.userAgent,
-      requestData.referer
-    ].join(' ').toLowerCase();
+    const combinedText = [requestData.url, requestData.userAgent, requestData.referer]
+      .join(' ')
+      .toLowerCase();
 
     for (const pattern of this.config.bannedPatterns) {
       if (pattern.test(combinedText)) {
-        return { 
-          threat: true, 
-          level: 'HIGH', 
+        return {
+          threat: true,
+          level: 'HIGH',
           reason: 'MALICIOUS_PATTERN',
-          pattern: pattern.toString()
+          pattern: pattern.toString(),
         };
       }
     }
@@ -129,33 +127,33 @@ class ThreatDetectionSystem extends EventEmitter {
   detectAnomalies(requestData) {
     const clientIP = requestData.ip;
     const history = this.requestHistory.get(clientIP) || [];
-    
+
     if (history.length < 5) {
       return { threat: false }; // Not enough data for anomaly detection
     }
 
     // Check for rapid pattern changes
-    const recentUrls = history.slice(-10).map(req => req.url);
+    const recentUrls = history.slice(-10).map((req) => req.url);
     const uniqueUrls = new Set(recentUrls);
-    
+
     // Anomaly: Accessing too many different endpoints rapidly
     if (uniqueUrls.size > 8 && history.length > 10) {
       return {
         threat: true,
         level: 'MEDIUM',
-        reason: 'RAPID_ENDPOINT_SCANNING'
+        reason: 'RAPID_ENDPOINT_SCANNING',
       };
     }
 
     // Anomaly: Unusual user agent switching
-    const recentUserAgents = history.slice(-5).map(req => req.userAgent);
+    const recentUserAgents = history.slice(-5).map((req) => req.userAgent);
     const uniqueUserAgents = new Set(recentUserAgents);
-    
+
     if (uniqueUserAgents.size > 3) {
       return {
         threat: true,
         level: 'MEDIUM',
-        reason: 'USER_AGENT_SWITCHING'
+        reason: 'USER_AGENT_SWITCHING',
       };
     }
 
@@ -177,10 +175,10 @@ class ThreatDetectionSystem extends EventEmitter {
     if (activities.length >= 3) {
       this.blockIP(clientIP, reason);
     } else if (activities.length >= 2) {
-      this.emit('escalated_threat', { 
-        ip: clientIP, 
+      this.emit('escalated_threat', {
+        ip: clientIP,
         activities: activities.length,
-        reason 
+        reason,
       });
     }
 
@@ -196,18 +194,22 @@ class ThreatDetectionSystem extends EventEmitter {
       ip: clientIP,
       reason,
       timestamp: Date.now(),
-      signature: crypto.createHash('sha256')
+      signature: crypto
+        .createHash('sha256')
         .update(clientIP + reason + Date.now())
-        .digest('hex')
+        .digest('hex'),
     };
 
     this.emit('ip_blocked', blockData);
-    
+
     // Auto-unblock after 24 hours
-    setTimeout(() => {
-      this.blockedIPs.delete(clientIP);
-      this.emit('ip_unblocked', { ip: clientIP, timestamp: Date.now() });
-    }, 24 * 60 * 60 * 1000);
+    setTimeout(
+      () => {
+        this.blockedIPs.delete(clientIP);
+        this.emit('ip_unblocked', { ip: clientIP, timestamp: Date.now() });
+      },
+      24 * 60 * 60 * 1000,
+    );
   }
 
   /**
@@ -220,7 +222,7 @@ class ThreatDetectionSystem extends EventEmitter {
     }
 
     this.requestHistory.get(clientIP).push(requestData);
-    
+
     // Limit history size per IP
     const history = this.requestHistory.get(clientIP);
     if (history.length > 100) {
@@ -232,33 +234,38 @@ class ThreatDetectionSystem extends EventEmitter {
    * Extract client IP from request
    */
   getClientIP(req) {
-    return req.headers['cf-connecting-ip'] ||
-           req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-           req.headers['x-real-ip'] ||
-           req.connection?.remoteAddress ||
-           req.socket?.remoteAddress ||
-           req.ip ||
-           'unknown';
+    return (
+      req.headers['cf-connecting-ip'] ||
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.headers['x-real-ip'] ||
+      req.connection?.remoteAddress ||
+      req.socket?.remoteAddress ||
+      req.ip ||
+      'unknown'
+    );
   }
 
   /**
    * Start cleanup interval for old data
    */
   startCleanupInterval() {
-    setInterval(() => {
-      this.cleanupOldData();
-    }, 5 * 60 * 1000); // Cleanup every 5 minutes
+    setInterval(
+      () => {
+        this.cleanupOldData();
+      },
+      5 * 60 * 1000,
+    ); // Cleanup every 5 minutes
   }
 
   /**
    * Clean up old request history and suspicious activity records
    */
   cleanupOldData() {
-    const cutoff = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago
 
     // Clean request history
     for (const [ip, history] of this.requestHistory.entries()) {
-      const filtered = history.filter(req => req.timestamp > cutoff);
+      const filtered = history.filter((req) => req.timestamp > cutoff);
       if (filtered.length === 0) {
         this.requestHistory.delete(ip);
       } else {
@@ -268,7 +275,7 @@ class ThreatDetectionSystem extends EventEmitter {
 
     // Clean suspicious activity
     for (const [ip, activities] of this.suspiciousActivity.entries()) {
-      const filtered = activities.filter(activity => activity.timestamp > cutoff);
+      const filtered = activities.filter((activity) => activity.timestamp > cutoff);
       if (filtered.length === 0) {
         this.suspiciousActivity.delete(ip);
       } else {
@@ -284,9 +291,11 @@ class ThreatDetectionSystem extends EventEmitter {
     return {
       blockedIPs: Array.from(this.blockedIPs),
       suspiciousIPs: Array.from(this.suspiciousActivity.keys()),
-      totalRequests: Array.from(this.requestHistory.values())
-        .reduce((sum, history) => sum + history.length, 0),
-      threatSignatures: this.threatSignatures.size
+      totalRequests: Array.from(this.requestHistory.values()).reduce(
+        (sum, history) => sum + history.length,
+        0,
+      ),
+      threatSignatures: this.threatSignatures.size,
     };
   }
 }

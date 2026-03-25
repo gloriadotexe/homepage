@@ -7,21 +7,21 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🌐 Setting up Gloria\'s automated feedback loops...\n');
+console.log("🌐 Setting up Gloria's automated feedback loops...\n");
 
 // Create directory structure
 const dirs = [
   'monitoring/agents',
-  'monitoring/config', 
+  'monitoring/config',
   'monitoring/dashboard',
   'monitoring/logs/security',
   'monitoring/logs/quality',
   'monitoring/logs/creative',
   'monitoring/logs/health',
-  'scripts/cron'
+  'scripts/cron',
 ];
 
-dirs.forEach(dir => {
+dirs.forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
     console.log(`✓ Created directory: ${dir}`);
@@ -33,39 +33,33 @@ const config = {
   site: {
     url: 'https://gloriadotexe.online',
     endpoints: ['/', '/lab', '/transmissions', '/projects'],
-    api_endpoints: ['/api/github/repos', '/api/github/user']
+    api_endpoints: ['/api/github/repos', '/api/github/user'],
   },
   security: {
-    scan_patterns: [
-      'api[_-]?key',
-      'secret',
-      'password', 
-      'token',
-      'credential'
-    ],
-    excluded_files: ['.gitignore', 'package-lock.json', 'yarn.lock']
+    scan_patterns: ['api[_-]?key', 'secret', 'password', 'token', 'credential'],
+    excluded_files: ['.gitignore', 'package-lock.json', 'yarn.lock'],
   },
   quality: {
     performance_threshold: 5000,
     error_threshold: 5,
-    check_interval_hours: 2
+    check_interval_hours: 2,
   },
   creative: {
     weekly_features: 1,
     experiment_directory: 'experiments',
-    deployment_branch: 'main'
+    deployment_branch: 'main',
   },
   notifications: {
     critical_escalation: true,
     email: 'gloria.exe@proton.me',
-    max_alerts_per_hour: 5
-  }
+    max_alerts_per_hour: 5,
+  },
 };
 
 fs.writeFileSync('monitoring/config/monitoring-config.json', JSON.stringify(config, null, 2));
 console.log('✓ Created monitoring configuration');
 
-// Create crontab entries  
+// Create crontab entries
 const cronJobs = `# Gloria's Self-Monitoring System
 # Security scan - daily at 3 AM MST
 0 3 * * * cd /var/www/gloriadotexe.online && node scripts/cron/security-monitor.js >> monitoring/logs/security/daily-$(date +\\%Y-\\%m-\\%d).log 2>&1

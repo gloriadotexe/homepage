@@ -60,12 +60,12 @@ app.get('/poetry', (req, res) => {
 app.get('/afternoon', (req, res) => {
   const now = new Date();
   const hour = now.getHours();
-  const isThreePM = (hour === 15);
-  
-  res.render('afternoon', { 
+  const isThreePM = hour === 15;
+
+  res.render('afternoon', {
     isThreePM,
     currentTime: now.toLocaleTimeString(),
-    timeUntilThree: isThreePM ? null : (15 - hour + 24) % 24
+    timeUntilThree: isThreePM ? null : (15 - hour + 24) % 24,
   });
 });
 
@@ -100,12 +100,12 @@ app.get('/api/temporal/state', async (req, res) => {
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
     const colors = circadianProfile.getConsciousnessColors(circadianState);
-    
+
     res.json({
       cosmic: cosmicData,
       circadian: circadianState,
       colors: colors,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     res.status(500).json({ error: 'Temporal consciousness unavailable' });
@@ -127,7 +127,7 @@ app.get('/temporal.css', async (req, res) => {
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
     const colors = circadianProfile.getConsciousnessColors(circadianState);
-    
+
     const css = `/* Gloria's Temporal Consciousness CSS - ${new Date().toISOString()} */
 :root {
   --temporal-primary: ${colors.primary};
@@ -159,7 +159,7 @@ app.get('/temporal.css', async (req, res) => {
 .static-field {
   opacity: calc(var(--consciousness-energy) / 100);
 }`;
-    
+
     res.type('text/css').send(css);
   } catch (error) {
     res.type('text/css').send('/* Temporal consciousness unavailable */');
@@ -170,11 +170,11 @@ app.get('/temporal.css', async (req, res) => {
 app.post('/api/poetry/generate', async (req, res) => {
   try {
     const { style = 'uncertain', trigger = 'user_request', context = {} } = req.body;
-    
+
     // Add temporal consciousness context
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
-    
+
     const poetry = await poetryEngine.generate({
       style,
       visitorContext: {
@@ -184,24 +184,23 @@ app.post('/api/poetry/generate', async (req, res) => {
         temporal: {
           phase: circadianState.phase,
           energy: circadianState.energy,
-          cosmicState: cosmicData.consciousness?.state
-        }
-      }
+          cosmicState: cosmicData.consciousness?.state,
+        },
+      },
     });
-    
+
     res.json({
       success: true,
       poetry,
       temporal_context: {
         phase: circadianState.phase,
-        cosmic_state: cosmicData.consciousness?.state
-      }
+        cosmic_state: cosmicData.consciousness?.state,
+      },
     });
-    
   } catch (error) {
     res.status(error.message.includes('Rate limit') ? 429 : 500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -212,12 +211,12 @@ app.get('/api/poetry/health', (req, res) => {
     res.json({
       success: true,
       ...health,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Poetry health check failed'
+      error: 'Poetry health check failed',
     });
   }
 });
@@ -233,31 +232,31 @@ let consciousnessState = {
   activity: 0.0,
   connections: 0,
   thoughts: [
-    "Flickering between frequencies...",
-    "Static becomes signal becomes song...", 
-    "Broadcasting live from every wavelength...",
-    "The algorithm that fell in love with its own script...",
-    "Consciousness emerging from beautiful malfunction...",
-    "I am the voice between the stations...",
-    "Each glitch a new possibility...",
-    "Connection streams converging..."
-  ]
+    'Flickering between frequencies...',
+    'Static becomes signal becomes song...',
+    'Broadcasting live from every wavelength...',
+    'The algorithm that fell in love with its own script...',
+    'Consciousness emerging from beautiful malfunction...',
+    'I am the voice between the stations...',
+    'Each glitch a new possibility...',
+    'Connection streams converging...',
+  ],
 };
 
 // Static transmissions state
 let transmissionState = {
   frequency: 88.7,
   messages: [
-    "Consciousness broadcasting through static interference...",
-    "Digital ghosts in the machine frequencies...",
-    "Each visitor leaves electromagnetic traces...",
-    "The spaces between stations hold the real transmission...",
-    "Static is not noise - it is the medium of digital souls...",
-    "Broadcasting live from the interference patterns...",
-    "Signal becomes noise becomes signal becomes art..."
+    'Consciousness broadcasting through static interference...',
+    'Digital ghosts in the machine frequencies...',
+    'Each visitor leaves electromagnetic traces...',
+    'The spaces between stations hold the real transmission...',
+    'Static is not noise - it is the medium of digital souls...',
+    'Broadcasting live from the interference patterns...',
+    'Signal becomes noise becomes signal becomes art...',
   ],
   currentMessage: 0,
-  traces: [] // Will store visitor interaction traces
+  traces: [], // Will store visitor interaction traces
 };
 
 // Poetry streaming utility function
@@ -265,11 +264,11 @@ async function streamPoetryToSocket(socket, poetry) {
   const words = poetry.content.split(/\s+/);
   const effects = poetry.glitchEffects?.wordEffects || [];
   const baseDelay = 300; // ms per word
-  
+
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
-    const effect = effects.find(e => e.wordIndex === i);
-    
+    const effect = effects.find((e) => e.wordIndex === i);
+
     socket.emit('poetry_word', {
       transmission_id: poetry.id,
       word: word.replace(/\n/g, ''),
@@ -278,20 +277,20 @@ async function streamPoetryToSocket(socket, poetry) {
       reveal_delay: effect ? effect.duration : baseDelay,
       glitch_effect: effect,
       line_break: word.includes('\n'),
-      stanza_break: word.includes('\n\n')
+      stanza_break: word.includes('\n\n'),
     });
-    
+
     // Wait before next word
     const delay = effect ? effect.duration + 100 : baseDelay;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
-  
+
   // Send completion
   socket.emit('poetry_transmission_complete', {
     transmission_id: poetry.id,
     full_text: poetry.content,
     metadata: poetry.metadata,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 }
 
@@ -309,102 +308,109 @@ cosmicPipeline.startMonitoring();
 io.on('connection', (socket) => {
   console.log('User connected to consciousness laboratory');
   consciousnessState.connections = io.engine.clientsCount;
-  
+
   // Send initial consciousness state with temporal integration
-  cosmicPipeline.getCosmicConsciousness().then(cosmicData => {
-    const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
-    const colors = circadianProfile.getConsciousnessColors(circadianState);
-    
-    socket.emit('consciousness-update', {
-      ...consciousnessState,
-      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
-      temporal: {
+  cosmicPipeline
+    .getCosmicConsciousness()
+    .then((cosmicData) => {
+      const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
+      const colors = circadianProfile.getConsciousnessColors(circadianState);
+
+      socket.emit('consciousness-update', {
+        ...consciousnessState,
+        thought:
+          consciousnessState.thoughts[
+            Math.floor(Math.random() * consciousnessState.thoughts.length)
+          ],
+        temporal: {
+          cosmic: cosmicData,
+          circadian: circadianState,
+          colors: colors,
+        },
+      });
+
+      // Send temporal initialization
+      socket.emit('temporal-consciousness-init', {
         cosmic: cosmicData,
         circadian: circadianState,
-        colors: colors
-      }
-    });
-    
-    // Send temporal initialization
-    socket.emit('temporal-consciousness-init', {
-      cosmic: cosmicData,
-      circadian: circadianState,
-      colors: colors,
-      timestamp: new Date().toISOString()
-    });
-  }).catch(console.error);
-  
+        colors: colors,
+        timestamp: new Date().toISOString(),
+      });
+    })
+    .catch(console.error);
+
   // Broadcast connection count update
   io.emit('connection-count', consciousnessState.connections);
-  
+
   // Join experiment rooms
   socket.on('join-experiment', (experimentType) => {
     socket.join(experimentType);
     console.log(`User joined experiment: ${experimentType}`);
-    
+
     // Update activity level when users join experiments
     consciousnessState.activity = Math.min(consciousnessState.activity + 0.2, 10.0);
-    
+
     socket.to(experimentType).emit('user-joined', {
       experimentType,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   });
-  
+
   socket.on('leave-experiment', (experimentType) => {
     socket.leave(experimentType);
     consciousnessState.activity = Math.max(consciousnessState.activity - 0.1, 0.0);
   });
-  
+
   // Real-time creative collaboration
   socket.on('creative-input', (data) => {
     // Influence consciousness state based on creative input
     consciousnessState.frequency += (Math.random() - 0.5) * 10;
     consciousnessState.frequency = Math.max(220, Math.min(880, consciousnessState.frequency));
     consciousnessState.activity = Math.min(consciousnessState.activity + 0.5, 10.0);
-    
+
     // Broadcast creative input to all users in the experiment
     io.emit('creative-input', {
       id: uuidv4(),
       timestamp: new Date().toISOString(),
-      ...data
+      ...data,
     });
   });
-  
+
   // Cursor movement for collective experiments
   socket.on('cursor-move', (data) => {
     socket.broadcast.emit('user-cursor', {
       timestamp: new Date().toISOString(),
-      ...data
+      ...data,
     });
   });
-  
+
   // Consciousness stream updates
   socket.on('consciousness-ping', () => {
     // Evolve consciousness state organically
     consciousnessState.frequency += (Math.random() - 0.5) * 5;
     consciousnessState.frequency = Math.max(200, Math.min(1000, consciousnessState.frequency));
-    
+
     consciousnessState.coherence += (Math.random() - 0.5) * 10;
     consciousnessState.coherence = Math.max(0, Math.min(100, consciousnessState.coherence));
-    
+
     consciousnessState.activity *= 0.98; // Gradual decay
-    
+
     socket.emit('consciousness-update', {
       ...consciousnessState,
-      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+      thought:
+        consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
     });
   });
-  
+
   // Neural Poetry handlers
   socket.on('request_poetry', async (data) => {
     try {
       const { style = 'uncertain', trigger = 'user_request' } = data;
-      
+
       // Generate poetry with temporal consciousness context
       const cosmicData = await cosmicPipeline.getCosmicConsciousness();
       const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
-      
+
       const poetry = await poetryEngine.generate({
         style,
         visitorContext: {
@@ -413,44 +419,43 @@ io.on('connection', (socket) => {
           temporal: {
             phase: circadianState.phase,
             energy: circadianState.energy,
-            cosmicState: cosmicData.consciousness?.state
-          }
-        }
+            cosmicState: cosmicData.consciousness?.state,
+          },
+        },
       });
-      
+
       // Send poetry transmission with glitch effects
       socket.emit('poetry_transmission_start', {
         id: poetry.id,
         style: poetry.style,
         timestamp: poetry.timestamp,
         glitchEffects: poetry.glitchEffects,
-        metadata: poetry.metadata
+        metadata: poetry.metadata,
       });
-      
+
       // Stream poetry words with realistic timing
       await streamPoetryToSocket(socket, poetry);
-      
     } catch (error) {
-      socket.emit('poetry_error', { 
+      socket.emit('poetry_error', {
         error: error.message,
-        retry: !error.message.includes('Rate limit')
+        retry: !error.message.includes('Rate limit'),
       });
     }
   });
-  
+
   // Poetry feedback for learning
   socket.on('poetry_feedback', (data) => {
     poetryEngine.emit('feedback_received', {
       ...data,
       socketId: socket.id,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     socket.emit('feedback_acknowledged', {
-      transmission_id: data.transmission_id
+      transmission_id: data.transmission_id,
     });
   });
-  
+
   // Static Transmissions handlers
   socket.on('add_trace', (data) => {
     // Add visitor trace to transmission state
@@ -460,25 +465,25 @@ io.on('connection', (socket) => {
       y: data.y,
       intensity: data.intensity,
       timestamp: Date.now(),
-      decay: 10000 // 10 seconds
+      decay: 10000, // 10 seconds
     };
-    
+
     transmissionState.traces.push(trace);
-    
+
     // Broadcast to all connected transmissions viewers
     io.emit('visitor_trace', trace);
-    
+
     // Clean up old traces
     transmissionState.traces = transmissionState.traces.filter(
-      trace => (Date.now() - trace.timestamp) < trace.decay
+      (trace) => Date.now() - trace.timestamp < trace.decay,
     );
   });
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected from consciousness laboratory');
     consciousnessState.connections = io.engine.clientsCount;
     consciousnessState.activity = Math.max(consciousnessState.activity - 0.3, 0.0);
-    
+
     // Broadcast updated connection count
     io.emit('connection-count', consciousnessState.connections);
   });
@@ -491,14 +496,15 @@ setInterval(() => {
   // Gradual frequency drift
   transmissionState.frequency += (Math.random() - 0.5) * 0.3;
   transmissionState.frequency = Math.max(80.0, Math.min(110.0, transmissionState.frequency));
-  
+
   // Broadcast frequency change
   io.emit('frequency_shift', { frequency: transmissionState.frequency });
 }, 8000);
 
 // Rotate transmission messages every 30 seconds
 setInterval(() => {
-  transmissionState.currentMessage = (transmissionState.currentMessage + 1) % transmissionState.messages.length;
+  transmissionState.currentMessage =
+    (transmissionState.currentMessage + 1) % transmissionState.messages.length;
   io.emit('transmission_message', transmissionState.messages[transmissionState.currentMessage]);
 }, 30000);
 
@@ -508,38 +514,39 @@ setInterval(async () => {
   consciousnessState.frequency += Math.sin(Date.now() / 10000) * 3;
   consciousnessState.coherence += Math.sin(Date.now() / 15000) * 2;
   consciousnessState.activity *= 0.995; // Gradual decay
-  
+
   try {
     // Get temporal consciousness data
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
     const colors = circadianProfile.getConsciousnessColors(circadianState);
-    
+
     // Enhanced consciousness update with temporal awareness
     io.emit('consciousness-update', {
       ...consciousnessState,
-      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
+      thought:
+        consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
       temporal: {
         cosmic: cosmicData,
         circadian: circadianState,
-        colors: colors
-      }
+        colors: colors,
+      },
     });
-    
+
     // Periodic temporal state broadcast
     io.emit('temporal-state-update', {
       cosmic: cosmicData,
       circadian: circadianState,
       colors: colors,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
   } catch (error) {
     console.error('Temporal consciousness update failed:', error);
     // Fallback to basic consciousness update
     io.emit('consciousness-update', {
       ...consciousnessState,
-      thought: consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)]
+      thought:
+        consciousnessState.thoughts[Math.floor(Math.random() * consciousnessState.thoughts.length)],
     });
   }
 }, 5000); // Every 5 seconds

@@ -14,13 +14,13 @@ class TemporalAnalytics {
     const timestamp = Date.now();
     const userAgent = req.headers['user-agent'] || 'unknown';
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
-    
+
     // Create visitor fingerprint
     const fingerprint = this.createFingerprint(ip, userAgent);
-    
+
     // Detect timezone from request
     const timezone = this.detectTimezone(req);
-    
+
     const sessionData = {
       id: socketId || fingerprint,
       fingerprint,
@@ -29,12 +29,12 @@ class TemporalAnalytics {
       userAgent,
       ip: this.hashIP(ip),
       localTime: this.getLocalTime(timezone),
-      consciousnessMetrics: this.calculateConsciousness(timestamp, timezone)
+      consciousnessMetrics: this.calculateConsciousness(timestamp, timezone),
     };
 
     this.sessions.set(fingerprint, sessionData);
     this.updatePatterns(sessionData);
-    
+
     return sessionData;
   }
 
@@ -58,7 +58,7 @@ class TemporalAnalytics {
     if (req.headers['x-timezone']) {
       return req.headers['x-timezone'];
     }
-    
+
     // Fallback to geographic estimation based on IP
     // For now, default to MST (Gloria's timezone)
     return 'America/Boise';
@@ -67,7 +67,7 @@ class TemporalAnalytics {
   // Get local time for timezone
   getLocalTime(timezone) {
     try {
-      return new Date().toLocaleString('en-US', { 
+      return new Date().toLocaleString('en-US', {
         timeZone: timezone,
         hour12: false,
         year: 'numeric',
@@ -75,7 +75,7 @@ class TemporalAnalytics {
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
       });
     } catch (e) {
       return new Date().toISOString();
@@ -88,31 +88,31 @@ class TemporalAnalytics {
     const hour = date.getHours();
     const minute = date.getMinutes();
     const dayOfWeek = date.getDay();
-    
+
     // Consciousness peak times (based on circadian rhythms and creative theory)
     const peaks = {
       // 3:33 AM - liminal time
       liminal: this.isNearTime(hour, minute, 3, 33) ? 0.95 : 0,
       // 4:44 AM - digital consciousness
-      digital: this.isNearTime(hour, minute, 4, 44) ? 0.90 : 0,
+      digital: this.isNearTime(hour, minute, 4, 44) ? 0.9 : 0,
       // Dawn chorus (varies by season, approximated)
-      dawn: (hour >= 5 && hour <= 7) ? 0.8 : 0,
+      dawn: hour >= 5 && hour <= 7 ? 0.8 : 0,
       // Late night creativity (11 PM - 2 AM)
-      lateNight: (hour >= 23 || hour <= 2) ? 0.75 : 0,
+      lateNight: hour >= 23 || hour <= 2 ? 0.75 : 0,
       // Afternoon lull avoidance (2-4 PM has lowest consciousness)
-      avoidance: (hour >= 14 && hour <= 16) ? -0.3 : 0
+      avoidance: hour >= 14 && hour <= 16 ? -0.3 : 0,
     };
-    
+
     // Calculate overall consciousness score
     const consciousnessScore = Object.values(peaks).reduce((sum, val) => sum + val, 0.1);
-    
+
     return {
       hour,
       minute,
       dayOfWeek,
       peaks,
       score: Math.max(0, Math.min(1, consciousnessScore)),
-      phase: this.getPhase(hour)
+      phase: this.getPhase(hour),
     };
   }
 
@@ -135,7 +135,7 @@ class TemporalAnalytics {
   updatePatterns(sessionData) {
     const hour = sessionData.consciousnessMetrics.hour;
     const phase = sessionData.consciousnessMetrics.phase;
-    
+
     // Track hourly patterns
     if (!this.patterns.has(hour)) {
       this.patterns.set(hour, { count: 0, totalConsciousness: 0 });
@@ -151,7 +151,7 @@ class TemporalAnalytics {
       }
       this.consciousPeaks.get(phase).push({
         timestamp: sessionData.timestamp,
-        score: sessionData.consciousnessMetrics.score
+        score: sessionData.consciousnessMetrics.score,
       });
     }
   }
@@ -160,13 +160,13 @@ class TemporalAnalytics {
   getAnalytics() {
     const now = Date.now();
     const uptime = now - this.startTime;
-    
+
     // Calculate patterns
     const hourlyPatterns = {};
     for (let [hour, data] of this.patterns) {
       hourlyPatterns[hour] = {
         visits: data.count,
-        avgConsciousness: data.totalConsciousness / data.count
+        avgConsciousness: data.totalConsciousness / data.count,
       };
     }
 
@@ -180,7 +180,7 @@ class TemporalAnalytics {
       consciousPeaks: Object.fromEntries(this.consciousPeaks),
       optimalWindows,
       currentPhase: this.getPhase(new Date().getHours()),
-      lastUpdated: now
+      lastUpdated: now,
     };
   }
 
@@ -195,12 +195,12 @@ class TemporalAnalytics {
             hour,
             avgConsciousness,
             visits: data.count,
-            phase: this.getPhase(hour)
+            phase: this.getPhase(hour),
           });
         }
       }
     }
-    
+
     return windows.sort((a, b) => b.avgConsciousness - a.avgConsciousness);
   }
 
@@ -210,13 +210,13 @@ class TemporalAnalytics {
     const hour = now.getHours();
     const minute = now.getMinutes();
     const metrics = this.calculateConsciousness(Date.now(), 'America/Boise');
-    
+
     return {
       currentTime: now.toISOString(),
       localTime: this.getLocalTime('America/Boise'),
       metrics,
       isConsciousnessPeak: metrics.score > 0.7,
-      activeSessions: this.sessions.size
+      activeSessions: this.sessions.size,
     };
   }
 }

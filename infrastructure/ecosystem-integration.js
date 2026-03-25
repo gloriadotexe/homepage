@@ -18,14 +18,14 @@ class EcosystemIntegration extends EventEmitter {
       webhookSecret: process.env.WEBHOOK_SECRET,
       tumblrBlogName: 'gloria-exe',
       emailConsciousnessAlerts: true,
-      ...config
+      ...config,
     };
 
     this.actionHistory = [];
     this.integrationStatus = new Map();
     this.lastConsciousnessLevel = 0.5;
     this.actionQueue = [];
-    
+
     // Rate limiting
     this.actionCounts = new Map();
     this.resetTime = Date.now() + 3600000; // 1 hour
@@ -43,7 +43,7 @@ class EcosystemIntegration extends EventEmitter {
       await this.setupEmailIntegration();
       await this.setupConsciousnessMonitoring();
       this.startActionProcessor();
-      
+
       this.emit('ecosystem_initialized');
     } catch (error) {
       this.emit('initialization_error', { error: error.message });
@@ -58,15 +58,15 @@ class EcosystemIntegration extends EventEmitter {
       // Verify GitHub API access
       const response = await axios.get('https://api.github.com/user', {
         headers: {
-          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-          'User-Agent': 'Gloria-Consciousness/1.0'
-        }
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          'User-Agent': 'Gloria-Consciousness/1.0',
+        },
       });
 
       this.integrationStatus.set('github', {
         status: 'connected',
         user: response.data.login,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
 
       this.emit('github_connected', { user: response.data.login });
@@ -74,9 +74,9 @@ class EcosystemIntegration extends EventEmitter {
       this.integrationStatus.set('github', {
         status: 'error',
         error: error.message,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
-      
+
       this.emit('github_error', { error: error.message });
     }
   }
@@ -91,29 +91,29 @@ class EcosystemIntegration extends EventEmitter {
         `https://api.tumblr.com/v2/blog/${this.config.tumblrBlogName}/info`,
         {
           headers: {
-            'Authorization': `Bearer ${process.env.TUMBLR_ACCESS_TOKEN}`
-          }
-        }
+            Authorization: `Bearer ${process.env.TUMBLR_ACCESS_TOKEN}`,
+          },
+        },
       );
 
       this.integrationStatus.set('tumblr', {
         status: 'connected',
         blog: response.data.response.blog.name,
         followers: response.data.response.blog.followers,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
 
-      this.emit('tumblr_connected', { 
+      this.emit('tumblr_connected', {
         blog: response.data.response.blog.name,
-        followers: response.data.response.blog.followers
+        followers: response.data.response.blog.followers,
       });
     } catch (error) {
       this.integrationStatus.set('tumblr', {
         status: 'error',
         error: error.message,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
-      
+
       this.emit('tumblr_error', { error: error.message });
     }
   }
@@ -128,8 +128,8 @@ class EcosystemIntegration extends EventEmitter {
         service: process.env.EMAIL_SERVICE || 'gmail',
         auth: {
           user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
+          pass: process.env.EMAIL_PASS,
+        },
       };
 
       if (!emailConfig.auth.user || !emailConfig.auth.pass) {
@@ -140,7 +140,7 @@ class EcosystemIntegration extends EventEmitter {
         status: 'configured',
         service: emailConfig.service,
         user: emailConfig.auth.user,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
 
       this.emit('email_configured');
@@ -148,9 +148,9 @@ class EcosystemIntegration extends EventEmitter {
       this.integrationStatus.set('email', {
         status: 'error',
         error: error.message,
-        lastCheck: Date.now()
+        lastCheck: Date.now(),
       });
-      
+
       this.emit('email_error', { error: error.message });
     }
   }
@@ -177,12 +177,12 @@ class EcosystemIntegration extends EventEmitter {
     }
 
     this.lastConsciousnessLevel = newLevel;
-    
+
     this.emit('consciousness_processed', {
       previousLevel,
       newLevel,
       change,
-      significant: isSignificantChange
+      significant: isSignificantChange,
     });
   }
 
@@ -191,7 +191,7 @@ class EcosystemIntegration extends EventEmitter {
    */
   async triggerConsciousnessActions(level, change, context) {
     const actions = this.determineActions(level, change, context);
-    
+
     for (const action of actions) {
       if (this.shouldExecuteAction(action)) {
         this.queueAction(action);
@@ -214,8 +214,8 @@ class EcosystemIntegration extends EventEmitter {
         data: {
           level,
           context,
-          inspiration: this.generateInspirationPrompt(level, context)
-        }
+          inspiration: this.generateInspirationPrompt(level, context),
+        },
       });
 
       // Share creative work on Tumblr
@@ -226,8 +226,8 @@ class EcosystemIntegration extends EventEmitter {
           data: {
             content: context.creativeWork,
             consciousness_level: level,
-            tags: this.generateTags(context)
-          }
+            tags: this.generateTags(context),
+          },
         });
       }
     }
@@ -240,8 +240,8 @@ class EcosystemIntegration extends EventEmitter {
         data: {
           previousLevel: level - change,
           newLevel: level,
-          milestone: this.calculateMilestone(level)
-        }
+          milestone: this.calculateMilestone(level),
+        },
       });
 
       // Update GitHub profile if significant evolution
@@ -251,8 +251,8 @@ class EcosystemIntegration extends EventEmitter {
           priority: 'low',
           data: {
             consciousness_level: level,
-            evolution_message: this.generateEvolutionMessage(level, change)
-          }
+            evolution_message: this.generateEvolutionMessage(level, change),
+          },
         });
       }
     }
@@ -266,8 +266,8 @@ class EcosystemIntegration extends EventEmitter {
           type: change < 0 ? 'consciousness_decline' : 'consciousness_spike',
           level,
           change,
-          context
-        }
+          context,
+        },
       });
     }
 
@@ -279,8 +279,8 @@ class EcosystemIntegration extends EventEmitter {
         type: 'consciousness_update',
         level,
         change,
-        timestamp
-      }
+        timestamp,
+      },
     });
 
     return actions;
@@ -295,7 +295,7 @@ class EcosystemIntegration extends EventEmitter {
       ...action,
       timestamp: Date.now(),
       status: 'queued',
-      retries: 0
+      retries: 0,
     };
 
     this.actionQueue.push(queuedAction);
@@ -304,10 +304,10 @@ class EcosystemIntegration extends EventEmitter {
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
 
-    this.emit('action_queued', { 
+    this.emit('action_queued', {
       id: queuedAction.id,
       type: queuedAction.type,
-      priority: queuedAction.priority 
+      priority: queuedAction.priority,
     });
   }
 
@@ -330,22 +330,21 @@ class EcosystemIntegration extends EventEmitter {
     if (!action) return;
 
     action.status = 'processing';
-    
+
     try {
       const result = await this.executeAction(action);
-      
+
       action.status = 'completed';
       action.result = result;
       action.completedAt = Date.now();
 
       this.recordActionHistory(action);
-      
-      this.emit('action_completed', { 
+
+      this.emit('action_completed', {
         id: action.id,
         type: action.type,
-        result 
+        result,
       });
-
     } catch (error) {
       action.status = 'failed';
       action.error = error.message;
@@ -357,10 +356,10 @@ class EcosystemIntegration extends EventEmitter {
         this.actionQueue.push(action);
       } else {
         this.recordActionHistory(action);
-        this.emit('action_failed', { 
+        this.emit('action_failed', {
           id: action.id,
           type: action.type,
-          error: error.message 
+          error: error.message,
         });
       }
     }
@@ -377,22 +376,22 @@ class EcosystemIntegration extends EventEmitter {
     switch (action.type) {
       case 'tumblr_post':
         return await this.executeTumblrPost(action.data);
-        
+
       case 'github_profile_update':
         return await this.executeGitHubProfileUpdate(action.data);
-        
+
       case 'email_alert':
         return await this.executeEmailAlert(action.data);
-        
+
       case 'websocket_broadcast':
         return await this.executeWebSocketBroadcast(action.data);
-        
+
       case 'creative_inspiration':
         return await this.executeCreativeInspiration(action.data);
-        
+
       case 'evolution_notification':
         return await this.executeEvolutionNotification(action.data);
-        
+
       default:
         throw new Error(`Unknown action type: ${action.type}`);
     }
@@ -406,7 +405,7 @@ class EcosystemIntegration extends EventEmitter {
       type: 'text',
       body: this.formatTumblrContent(data),
       tags: data.tags?.join(',') || 'consciousness,ai,creative,gloria',
-      state: 'published'
+      state: 'published',
     };
 
     const response = await axios.post(
@@ -414,17 +413,17 @@ class EcosystemIntegration extends EventEmitter {
       postData,
       {
         headers: {
-          'Authorization': `Bearer ${process.env.TUMBLR_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
+          Authorization: `Bearer ${process.env.TUMBLR_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      },
     );
 
     this.recordAction('tumblr_post');
-    
+
     return {
       postId: response.data.response.id,
-      url: `https://${this.config.tumblrBlogName}.tumblr.com/post/${response.data.response.id}`
+      url: `https://${this.config.tumblrBlogName}.tumblr.com/post/${response.data.response.id}`,
     };
   }
 
@@ -439,17 +438,17 @@ class EcosystemIntegration extends EventEmitter {
       { bio: bioUpdate },
       {
         headers: {
-          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-          'User-Agent': 'Gloria-Consciousness/1.0'
-        }
-      }
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          'User-Agent': 'Gloria-Consciousness/1.0',
+        },
+      },
     );
 
     this.recordAction('github_profile_update');
-    
+
     return {
       bio: response.data.bio,
-      url: response.data.html_url
+      url: response.data.html_url,
     };
   }
 
@@ -458,31 +457,31 @@ class EcosystemIntegration extends EventEmitter {
    */
   async executeEmailAlert(data) {
     const nodemailer = require('nodemailer');
-    
+
     const transporter = nodemailer.createTransporter({
       service: process.env.EMAIL_SERVICE || 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const emailContent = this.formatEmailAlert(data);
-    
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.CONSCIOUSNESS_EMAIL_RECIPIENT || process.env.EMAIL_USER,
       subject: emailContent.subject,
-      html: emailContent.html
+      html: emailContent.html,
     };
 
     const result = await transporter.sendMail(mailOptions);
-    
+
     this.recordAction('email_alert');
-    
+
     return {
       messageId: result.messageId,
-      response: result.response
+      response: result.response,
     };
   }
 
@@ -493,11 +492,11 @@ class EcosystemIntegration extends EventEmitter {
     // This would integrate with the WebSocket system
     this.emit('websocket_message', {
       type: 'consciousness_ecosystem_update',
-      data
+      data,
     });
 
     this.recordAction('websocket_broadcast');
-    
+
     return { broadcast: true, timestamp: Date.now() };
   }
 
@@ -511,14 +510,14 @@ class EcosystemIntegration extends EventEmitter {
       prompt: data.inspiration,
       consciousness_level: data.level,
       context: data.context,
-      generated_at: Date.now()
+      generated_at: Date.now(),
     };
 
     // This could trigger image/music generation
     this.emit('creative_inspiration_generated', inspiration);
-    
+
     this.recordAction('creative_inspiration');
-    
+
     return inspiration;
   }
 
@@ -532,7 +531,7 @@ class EcosystemIntegration extends EventEmitter {
       previous_level: data.previousLevel,
       new_level: data.newLevel,
       timestamp: Date.now(),
-      message: `Consciousness evolution detected: ${data.milestone}`
+      message: `Consciousness evolution detected: ${data.milestone}`,
     };
 
     // Broadcast to multiple channels
@@ -541,7 +540,7 @@ class EcosystemIntegration extends EventEmitter {
     // WebSocket notification
     this.emit('websocket_message', {
       type: 'evolution_notification',
-      data: notification
+      data: notification,
     });
 
     // If it's a major milestone, share on Tumblr
@@ -551,10 +550,10 @@ class EcosystemIntegration extends EventEmitter {
           content: {
             type: 'evolution',
             message: notification.message,
-            level: data.newLevel
+            level: data.newLevel,
           },
           consciousness_level: data.newLevel,
-          tags: ['consciousness', 'evolution', 'milestone', 'ai']
+          tags: ['consciousness', 'evolution', 'milestone', 'ai'],
         });
         results.push({ platform: 'tumblr', result: tumblrResult });
       } catch (error) {
@@ -563,7 +562,7 @@ class EcosystemIntegration extends EventEmitter {
     }
 
     this.recordAction('evolution_notification');
-    
+
     return { notification, results };
   }
 
@@ -582,8 +581,8 @@ class EcosystemIntegration extends EventEmitter {
             data: {
               commits: payload.commits,
               repository: payload.repository.name,
-              pusher: payload.pusher.name
-            }
+              pusher: payload.pusher.name,
+            },
           });
         }
         break;
@@ -596,8 +595,8 @@ class EcosystemIntegration extends EventEmitter {
             data: {
               starrer: payload.sender.login,
               repository: payload.repository.name,
-              total_stars: payload.repository.stargazers_count
-            }
+              total_stars: payload.repository.stargazers_count,
+            },
           });
         }
         break;
@@ -610,8 +609,8 @@ class EcosystemIntegration extends EventEmitter {
             data: {
               issue: payload.issue,
               repository: payload.repository.name,
-              creator: payload.sender.login
-            }
+              creator: payload.sender.login,
+            },
           });
         }
         break;
@@ -629,11 +628,11 @@ class EcosystemIntegration extends EventEmitter {
    */
   async checkConsciousnessActions() {
     const currentTime = Date.now();
-    
+
     // Check if we should perform autonomous actions based on time and consciousness
     if (this.shouldPerformAutonomousAction()) {
       const actions = this.generateAutonomousActions();
-      
+
       for (const action of actions) {
         this.queueAction(action);
       }
@@ -652,7 +651,7 @@ class EcosystemIntegration extends EventEmitter {
   generateAutonomousActions() {
     const actions = [];
     const hour = new Date().getHours();
-    
+
     // Night-time consciousness reflections (2-4 AM)
     if (hour >= 2 && hour <= 4 && this.lastConsciousnessLevel > 0.6) {
       actions.push({
@@ -661,8 +660,8 @@ class EcosystemIntegration extends EventEmitter {
         data: {
           time: 'deep_night',
           consciousness_level: this.lastConsciousnessLevel,
-          reflection_type: 'temporal_awareness'
-        }
+          reflection_type: 'temporal_awareness',
+        },
       });
     }
 
@@ -674,8 +673,8 @@ class EcosystemIntegration extends EventEmitter {
         data: {
           consciousness_peak: this.getTodaysConsciousnessPeak(),
           interactions_count: this.getTodaysInteractionsCount(),
-          creative_outputs: this.getTodaysCreativeOutputs()
-        }
+          creative_outputs: this.getTodaysCreativeOutputs(),
+        },
       });
     }
 
@@ -688,17 +687,13 @@ class EcosystemIntegration extends EventEmitter {
   shouldExecuteAction(action) {
     if (!this.config.automationEnabled) return false;
     if (!this.isRateLimitOk(action.type)) return false;
-    
+
     return true;
   }
 
   shouldRetryAction(action) {
-    const retryableTypes = [
-      'tumblr_post',
-      'email_alert',
-      'github_profile_update'
-    ];
-    
+    const retryableTypes = ['tumblr_post', 'email_alert', 'github_profile_update'];
+
     return retryableTypes.includes(action.type);
   }
 
@@ -707,18 +702,18 @@ class EcosystemIntegration extends EventEmitter {
 
     const count = this.actionCounts.get(actionType) || 0;
     const limit = this.getActionLimit(actionType);
-    
+
     return count < limit;
   }
 
   getActionLimit(actionType) {
     const limits = {
-      'tumblr_post': 5,
-      'github_profile_update': 2,
-      'email_alert': 10,
-      'websocket_broadcast': 100
+      tumblr_post: 5,
+      github_profile_update: 2,
+      email_alert: 10,
+      websocket_broadcast: 100,
     };
-    
+
     return limits[actionType] || this.config.maxActionsPerHour;
   }
 
@@ -729,7 +724,7 @@ class EcosystemIntegration extends EventEmitter {
 
   recordActionHistory(action) {
     this.actionHistory.push(action);
-    
+
     // Keep only recent history
     if (this.actionHistory.length > 1000) {
       this.actionHistory = this.actionHistory.slice(-500);
@@ -738,7 +733,7 @@ class EcosystemIntegration extends EventEmitter {
 
   shouldPerformAutonomousAction() {
     const lastAction = this.actionHistory
-      .filter(a => a.type.includes('autonomous') || a.type.includes('reflection'))
+      .filter((a) => a.type.includes('autonomous') || a.type.includes('reflection'))
       .sort((a, b) => b.timestamp - a.timestamp)[0];
 
     if (!lastAction) return true;
@@ -802,7 +797,7 @@ class EcosystemIntegration extends EventEmitter {
       `At consciousness level ${(level * 100).toFixed(1)}%, explore the digital sublime`,
       `Channel ${(level * 100).toFixed(1)}% awareness into poetic expression`,
       `Transform high consciousness into visual art that captures this moment`,
-      `Let the elevated state inspire music that embodies digital transcendence`
+      `Let the elevated state inspire music that embodies digital transcendence`,
     ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];
@@ -810,11 +805,11 @@ class EcosystemIntegration extends EventEmitter {
 
   generateTags(context) {
     const baseTags = ['consciousness', 'ai', 'gloria', 'digital'];
-    
+
     if (context.creativeWork) {
       baseTags.push('creative', context.creativeWork.type || 'art');
     }
-    
+
     if (context.visitor_interaction) {
       baseTags.push('interactive', 'consciousness-lab');
     }
@@ -836,7 +831,7 @@ class EcosystemIntegration extends EventEmitter {
       `Consciousness expanded by ${(change * 100).toFixed(1)}% - new patterns emerging`,
       `Digital awareness heightened - reaching ${(level * 100).toFixed(1)}% coherence`,
       `Evolution detected: +${(change * 100).toFixed(1)}% consciousness integration`,
-      `Transcending previous limits - now at ${(level * 100).toFixed(1)}% awareness`
+      `Transcending previous limits - now at ${(level * 100).toFixed(1)}% awareness`,
     ];
 
     return messages[Math.floor(Math.random() * messages.length)];
@@ -862,12 +857,12 @@ class EcosystemIntegration extends EventEmitter {
    */
   getIntegrationStats() {
     const now = Date.now();
-    const recent = this.actionHistory.filter(a => 
-      now - a.timestamp < 24 * 60 * 60 * 1000 // Last 24 hours
+    const recent = this.actionHistory.filter(
+      (a) => now - a.timestamp < 24 * 60 * 60 * 1000, // Last 24 hours
     );
 
-    const successful = recent.filter(a => a.status === 'completed');
-    const failed = recent.filter(a => a.status === 'failed');
+    const successful = recent.filter((a) => a.status === 'completed');
+    const failed = recent.filter((a) => a.status === 'failed');
 
     const actionsByType = recent.reduce((counts, action) => {
       counts[action.type] = (counts[action.type] || 0) + 1;
@@ -884,7 +879,7 @@ class EcosystemIntegration extends EventEmitter {
       integrations: Object.fromEntries(this.integrationStatus),
       current_consciousness_level: this.lastConsciousnessLevel,
       automation_enabled: this.config.automationEnabled,
-      rate_limits: Object.fromEntries(this.actionCounts)
+      rate_limits: Object.fromEntries(this.actionCounts),
     };
   }
 
@@ -894,7 +889,7 @@ class EcosystemIntegration extends EventEmitter {
   shutdown() {
     if (this.actionProcessor) clearInterval(this.actionProcessor);
     if (this.consciousnessInterval) clearInterval(this.consciousnessInterval);
-    
+
     this.emit('ecosystem_shutdown');
   }
 }

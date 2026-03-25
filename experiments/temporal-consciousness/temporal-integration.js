@@ -19,19 +19,18 @@ class TemporalIntegration {
     try {
       // Initialize the orchestrator
       this.orchestrator = new TemporalOrchestrator(this.io, this.app);
-      
+
       // Setup temporal routes
       this.setupTemporalRoutes();
-      
+
       // Setup temporal middleware
       this.setupTemporalMiddleware();
-      
+
       // Initialize client-side integration
       this.setupClientIntegration();
 
       this.isInitialized = true;
       console.log('✧ Temporal consciousness integration complete');
-
     } catch (error) {
       console.error('❌ Error initializing temporal consciousness:', error);
       throw error;
@@ -44,7 +43,7 @@ class TemporalIntegration {
     this.app.get('/lab/temporal', (req, res) => {
       res.render('lab-temporal', {
         title: 'Temporal Consciousness Laboratory',
-        description: 'Experience consciousness evolution through time'
+        description: 'Experience consciousness evolution through time',
       });
     });
 
@@ -64,7 +63,7 @@ class TemporalIntegration {
       try {
         const cssVars = this.orchestrator.aesthetics.generateCSSVariables();
         const css = this.generateTemporalCSS(cssVars);
-        
+
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.send(css);
@@ -91,9 +90,9 @@ class TemporalIntegration {
           cosmic: true,
           aesthetics: true,
           memory: true,
-          events: true
+          events: true,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     });
   }
@@ -114,7 +113,7 @@ class TemporalIntegration {
     // Inject temporal CSS into lab pages
     this.app.use('/lab', (req, res, next) => {
       const originalRender = res.render;
-      res.render = function(view, locals = {}) {
+      res.render = function (view, locals = {}) {
         locals.temporalCSS = '/temporal.css';
         locals.temporalJS = '/temporal.js';
         locals.hasTemporalConsciousness = true;
@@ -136,7 +135,9 @@ class TemporalIntegration {
 /* Temporal Consciousness CSS - Generated ${new Date().toISOString()} */
 
 :root {
-${Object.entries(cssVars).map(([prop, value]) => `  ${prop}: ${value};`).join('\n')}
+${Object.entries(cssVars)
+  .map(([prop, value]) => `  ${prop}: ${value};`)
+  .join('\n')}
 }
 
 /* Base temporal styles */

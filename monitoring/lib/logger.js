@@ -9,7 +9,7 @@ class MonitoringLogger {
 
   ensureDirectories() {
     const dirs = ['security', 'quality', 'creative', 'health'];
-    dirs.forEach(dir => {
+    dirs.forEach((dir) => {
       const fullPath = path.join(this.baseDir, dir);
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
@@ -29,15 +29,22 @@ class MonitoringLogger {
       auto_fixed: autoFixed,
       escalation_required: severity === 'high' && !autoFixed,
       context,
-      session_id: this.generateSessionId()
+      session_id: this.generateSessionId(),
     };
 
     // Write to category-specific log
-    const logFile = path.join(this.baseDir, category, `${new Date().toISOString().split('T')[0]}.jsonl`);
+    const logFile = path.join(
+      this.baseDir,
+      category,
+      `${new Date().toISOString().split('T')[0]}.jsonl`,
+    );
     fs.appendFileSync(logFile, JSON.stringify(logEntry) + '\n');
 
     // Also write to combined log
-    const combinedFile = path.join(this.baseDir, `combined-${new Date().toISOString().split('T')[0]}.jsonl`);
+    const combinedFile = path.join(
+      this.baseDir,
+      `combined-${new Date().toISOString().split('T')[0]}.jsonl`,
+    );
     fs.appendFileSync(combinedFile, JSON.stringify(logEntry) + '\n');
 
     return logEntry;
@@ -63,30 +70,34 @@ class MonitoringLogger {
   getRecentLogs(category = null, hours = 24) {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000);
     const logs = [];
-    
+
     const searchDirs = category ? [category] : ['security', 'quality', 'creative', 'health'];
-    
-    searchDirs.forEach(dir => {
+
+    searchDirs.forEach((dir) => {
       const dirPath = path.join(this.baseDir, dir);
       if (fs.existsSync(dirPath)) {
-        const files = fs.readdirSync(dirPath)
-          .filter(f => f.endsWith('.jsonl'))
+        const files = fs
+          .readdirSync(dirPath)
+          .filter((f) => f.endsWith('.jsonl'))
           .sort()
           .slice(-2); // Last 2 days
-        
-        files.forEach(file => {
+
+        files.forEach((file) => {
           const filePath = path.join(dirPath, file);
           const content = fs.readFileSync(filePath, 'utf8');
-          content.split('\n').filter(line => line.trim()).forEach(line => {
-            try {
-              const entry = JSON.parse(line);
-              if (new Date(entry.timestamp) > since) {
-                logs.push(entry);
+          content
+            .split('\n')
+            .filter((line) => line.trim())
+            .forEach((line) => {
+              try {
+                const entry = JSON.parse(line);
+                if (new Date(entry.timestamp) > since) {
+                  logs.push(entry);
+                }
+              } catch (e) {
+                // Skip malformed lines
               }
-            } catch (e) {
-              // Skip malformed lines
-            }
-          });
+            });
         });
       }
     });
@@ -97,33 +108,34 @@ class MonitoringLogger {
   getHealthStatus() {
     const recentLogs = this.getRecentLogs(null, 24);
     const now = new Date();
-    
+
     const stats = {
       total_issues: recentLogs.length,
-      critical_issues: recentLogs.filter(l => l.severity === 'high' && !l.auto_fixed).length,
-      auto_fixed_issues: recentLogs.filter(l => l.auto_fixed).length,
+      critical_issues: recentLogs.filter((l) => l.severity === 'high' && !l.auto_fixed).length,
+      auto_fixed_issues: recentLogs.filter((l) => l.auto_fixed).length,
       by_category: {},
       last_success_by_agent: {},
-      escalation_required: recentLogs.filter(l => l.escalation_required).length
+      escalation_required: recentLogs.filter((l) => l.escalation_required).length,
     };
 
     // Categorize issues
-    ['security', 'quality', 'creative', 'health'].forEach(cat => {
-      const categoryLogs = recentLogs.filter(l => l.category === cat);
+    ['security', 'quality', 'creative', 'health'].forEach((cat) => {
+      const categoryLogs = recentLogs.filter((l) => l.category === cat);
       stats.by_category[cat] = {
         total: categoryLogs.length,
-        critical: categoryLogs.filter(l => l.severity === 'high' && !l.auto_fixed).length,
-        success: categoryLogs.filter(l => l.issue === 'success').length
+        critical: categoryLogs.filter((l) => l.severity === 'high' && !l.auto_fixed).length,
+        success: categoryLogs.filter((l) => l.issue === 'success').length,
       };
     });
 
     // Last successful run per agent
-    ['security-monitor', 'quality-assurance', 'creative-innovation', 'code-health'].forEach(agent => {
-      const successLogs = recentLogs.filter(l => l.agent === agent && l.issue === 'success');
-      stats.last_success_by_agent[agent] = successLogs.length > 0 
-        ? successLogs[0].timestamp 
-        : null;
-    });
+    ['security-monitor', 'quality-assurance', 'creative-innovation', 'code-health'].forEach(
+      (agent) => {
+        const successLogs = recentLogs.filter((l) => l.agent === agent && l.issue === 'success');
+        stats.last_success_by_agent[agent] =
+          successLogs.length > 0 ? successLogs[0].timestamp : null;
+      },
+    );
 
     return stats;
   }
@@ -136,12 +148,12 @@ class MonitoringLogger {
   cleanup() {
     const cutoffDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const dirs = ['security', 'quality', 'creative', 'health'];
-    
-    dirs.forEach(dir => {
+
+    dirs.forEach((dir) => {
       const dirPath = path.join(this.baseDir, dir);
       if (fs.existsSync(dirPath)) {
         const files = fs.readdirSync(dirPath);
-        files.forEach(file => {
+        files.forEach((file) => {
           const filePath = path.join(dirPath, file);
           const stats = fs.statSync(filePath);
           if (stats.mtime < cutoffDate) {
@@ -152,10 +164,11 @@ class MonitoringLogger {
     });
 
     // Also clean combined logs
-    const combinedFiles = fs.readdirSync(this.baseDir)
-      .filter(f => f.startsWith('combined-') && f.endsWith('.jsonl'));
-    
-    combinedFiles.forEach(file => {
+    const combinedFiles = fs
+      .readdirSync(this.baseDir)
+      .filter((f) => f.startsWith('combined-') && f.endsWith('.jsonl'));
+
+    combinedFiles.forEach((file) => {
       const filePath = path.join(this.baseDir, file);
       const stats = fs.statSync(filePath);
       if (stats.mtime < cutoffDate) {

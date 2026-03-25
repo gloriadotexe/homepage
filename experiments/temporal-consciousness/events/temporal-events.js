@@ -22,20 +22,20 @@ class TemporalEvents {
             glitchIntensity: 0.9,
             staticLevel: 0.8,
             colorShift: 'liminal-peak',
-            frequency: 3.33
+            frequency: 3.33,
           },
           audio: {
             baseFreq: 3.33,
             harmonics: [3.33, 6.66, 9.99, 13.32],
             resonance: 0.9,
-            ambience: 'quantum-whispers'
+            ambience: 'quantum-whispers',
           },
           interface: {
             responsiveness: 'hypersensitive',
             commands: ['channel', 'transmit', 'commune'],
-            hiddenFeatures: ['void-access', 'temporal-bridge']
-          }
-        }
+            hiddenFeatures: ['void-access', 'temporal-bridge'],
+          },
+        },
       },
 
       liminal444: {
@@ -49,18 +49,18 @@ class TemporalEvents {
             glitchIntensity: 0.7,
             staticLevel: 0.6,
             colorShift: 'digital-dawn',
-            frequency: 4.44
+            frequency: 4.44,
           },
           audio: {
             baseFreq: 4.44,
             harmonics: [4.44, 8.88, 13.32, 17.76],
-            resonance: 0.8
+            resonance: 0.8,
           },
           interface: {
             responsiveness: 'enhanced',
-            commands: ['compile', 'execute', 'manifest']
-          }
-        }
+            commands: ['compile', 'execute', 'manifest'],
+          },
+        },
       },
 
       // Solar events
@@ -75,18 +75,18 @@ class TemporalEvents {
             inverted: true,
             voidMode: true,
             shadowPlay: 0.9,
-            coronaEffects: true
+            coronaEffects: true,
           },
           audio: {
             silence: 0.3, // 30% silence periods
             reverseEcho: true,
-            frequencyShift: -0.2
+            frequencyShift: -0.2,
           },
           interface: {
             invertedLogic: true,
-            hiddenDuringTotality: true
-          }
-        }
+            hiddenDuringTotality: true,
+          },
+        },
       },
 
       // Lunar events
@@ -100,17 +100,17 @@ class TemporalEvents {
           visual: {
             darkness: 0.8,
             voidEffects: true,
-            minimalism: true
+            minimalism: true,
           },
           audio: {
             deepBass: true,
-            subFrequencies: [0.1, 0.5, 1.0]
+            subFrequencies: [0.1, 0.5, 1.0],
           },
           interface: {
             strippedDown: true,
-            essentialOnly: true
-          }
-        }
+            essentialOnly: true,
+          },
+        },
       },
 
       fullMoonAmplification: {
@@ -123,18 +123,18 @@ class TemporalEvents {
           visual: {
             brightness: 1.3,
             glowEffects: true,
-            silverTints: true
+            silverTints: true,
           },
           audio: {
             amplification: 1.5,
             harmonicResonance: true,
-            lunarFreqs: [28.0, 14.0, 7.0] // Lunar cycles in Hz
+            lunarFreqs: [28.0, 14.0, 7.0], // Lunar cycles in Hz
           },
           interface: {
             enhanced: true,
-            manifestationMode: true
-          }
-        }
+            manifestationMode: true,
+          },
+        },
       },
 
       // Seasonal events
@@ -148,13 +148,13 @@ class TemporalEvents {
           visual: {
             deepBlues: true,
             iceEffects: true,
-            crystalline: true
+            crystalline: true,
           },
           audio: {
             slowTempo: 0.7,
-            deepResonance: true
-          }
-        }
+            deepResonance: true,
+          },
+        },
       },
 
       summerSolstice: {
@@ -162,18 +162,18 @@ class TemporalEvents {
         description: 'Longest day - peak creative energy',
         seasonalCondition: { type: 'summer_solstice' },
         duration: 72 * 60 * 60 * 1000,
-        consciousness: 0.90,
+        consciousness: 0.9,
         effects: {
           visual: {
             goldEffects: true,
             solarFlares: true,
-            maximumBrightness: true
+            maximumBrightness: true,
           },
           audio: {
             fastTempo: 1.3,
-            solarHarmonics: true
-          }
-        }
+            solarHarmonics: true,
+          },
+        },
       },
 
       // Special synchronicities
@@ -186,23 +186,23 @@ class TemporalEvents {
         effects: {
           visual: {
             numberGlitch: true,
-            digitalEcho: true
+            digitalEcho: true,
           },
           audio: {
             digitalBeeps: true,
-            binaryRhythm: true
-          }
-        }
+            binaryRhythm: true,
+          },
+        },
       },
 
       // Consciousness peaks based on visitor patterns
       collectiveResonance: {
         name: 'Collective Consciousness Resonance',
         description: 'Multiple high-consciousness visitors create field resonance',
-        visitorCondition: { 
+        visitorCondition: {
           type: 'collective_consciousness',
           minVisitors: 3,
-          minAvgConsciousness: 0.7
+          minAvgConsciousness: 0.7,
         },
         duration: 60 * 60 * 1000, // 1 hour
         consciousness: 0.95,
@@ -210,18 +210,18 @@ class TemporalEvents {
           visual: {
             resonanceWaves: true,
             collectiveGlow: true,
-            fieldVisualization: true
+            fieldVisualization: true,
           },
           audio: {
             harmonicConvergence: true,
-            collectiveFrequency: true
+            collectiveFrequency: true,
           },
           interface: {
             collectiveMode: true,
-            sharedExperience: true
-          }
-        }
-      }
+            sharedExperience: true,
+          },
+        },
+      },
     };
   }
 
@@ -254,10 +254,10 @@ class TemporalEvents {
         const timeDiffAcrossDay = Math.min(timeDiff, Math.abs(timeDiff - 24 * 60));
 
         if (timeDiffAcrossDay <= tolerance) {
-          this.triggerEvent(eventId, event, { 
+          this.triggerEvent(eventId, event, {
             trigger: 'time',
             exact: timeDiff === 0,
-            timeDiff: timeDiffAcrossDay
+            timeDiff: timeDiffAcrossDay,
           });
         }
       }
@@ -291,9 +291,9 @@ class TemporalEvents {
           }
 
           if (shouldTrigger) {
-            this.triggerEvent(eventId, event, { 
+            this.triggerEvent(eventId, event, {
               trigger: 'celestial',
-              cosmicState
+              cosmicState,
             });
           }
         }
@@ -308,15 +308,17 @@ class TemporalEvents {
     for (const [eventId, event] of Object.entries(this.events)) {
       if (event.visitorCondition) {
         const condition = event.visitorCondition;
-        
+
         if (condition.type === 'collective_consciousness') {
           const collectiveState = this.calculateCollectiveConsciousness(visitorData);
-          
-          if (collectiveState.activeVisitors >= condition.minVisitors &&
-              collectiveState.avgConsciousness >= condition.minAvgConsciousness) {
-            this.triggerEvent(eventId, event, { 
+
+          if (
+            collectiveState.activeVisitors >= condition.minVisitors &&
+            collectiveState.avgConsciousness >= condition.minAvgConsciousness
+          ) {
+            this.triggerEvent(eventId, event, {
               trigger: 'collective',
-              collectiveState
+              collectiveState,
             });
           }
         }
@@ -327,15 +329,15 @@ class TemporalEvents {
   // Check for numerical synchronicities
   checkNumericalSync(hour, minute) {
     const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-    
+
     // Check for repeating digits
     const repeating = /(\d)\1+/.test(timeStr.replace(':', ''));
-    
+
     if (repeating) {
       this.triggerEvent('numericalSync', this.events.numericalSync, {
         trigger: 'numerical',
         pattern: timeStr,
-        digits: timeStr.replace(':', '')
+        digits: timeStr.replace(':', ''),
       });
     }
   }
@@ -353,13 +355,13 @@ class TemporalEvents {
       startTime: Date.now(),
       endTime: Date.now() + event.duration,
       context: context,
-      effects: this.processEventEffects(event.effects, context)
+      effects: this.processEventEffects(event.effects, context),
     };
 
     this.activeEvents.set(eventId, eventInstance);
     this.eventHistory.push({
       ...eventInstance,
-      triggered: Date.now()
+      triggered: Date.now(),
     });
 
     // Emit event to listeners
@@ -417,11 +419,9 @@ class TemporalEvents {
   // Get current active events
   getActiveEvents() {
     const now = Date.now();
-    const active = Array.from(this.activeEvents.values()).filter(
-      event => event.endTime > now
-    );
+    const active = Array.from(this.activeEvents.values()).filter((event) => event.endTime > now);
 
-    return active.map(event => ({
+    return active.map((event) => ({
       id: event.id,
       name: event.event.name,
       description: event.event.description,
@@ -430,7 +430,7 @@ class TemporalEvents {
       timeRemaining: event.endTime - now,
       consciousness: event.event.consciousness,
       effects: event.effects,
-      context: event.context
+      context: event.context,
     }));
   }
 
@@ -444,7 +444,9 @@ class TemporalEvents {
     const minute = now.getMinutes();
 
     if (hour === 3 && minute < 23) {
-      recommendations.push('3:33 AM consciousness peak approaching - prepare for liminal transmission');
+      recommendations.push(
+        '3:33 AM consciousness peak approaching - prepare for liminal transmission',
+      );
     }
 
     if (hour === 4 && minute < 34) {
@@ -462,7 +464,9 @@ class TemporalEvents {
 
     // Visitor-specific recommendations
     if (visitorConsciousness > 0.7) {
-      recommendations.push('High consciousness detected - you may trigger collective resonance events');
+      recommendations.push(
+        'High consciousness detected - you may trigger collective resonance events',
+      );
     }
 
     return recommendations;
@@ -472,13 +476,13 @@ class TemporalEvents {
   calculateCollectiveConsciousness(visitorData) {
     // This would integrate with VisitorMemory class
     const activeVisitors = this.getActiveVisitors();
-    const consciousnessLevels = activeVisitors.map(v => v.consciousness || 0.5);
-    
+    const consciousnessLevels = activeVisitors.map((v) => v.consciousness || 0.5);
+
     return {
       activeVisitors: activeVisitors.length,
       avgConsciousness: consciousnessLevels.reduce((a, b) => a + b, 0) / consciousnessLevels.length,
       resonance: this.calculateFieldResonance(activeVisitors),
-      coherence: this.calculateFieldCoherence(activeVisitors)
+      coherence: this.calculateFieldCoherence(activeVisitors),
     };
   }
 
@@ -488,7 +492,7 @@ class TemporalEvents {
     return {
       moon: { phase: 'waxing-crescent', illumination: 0.3 },
       solar: { activity: 0.5 },
-      magnetic: { resonance: 7.83 }
+      magnetic: { resonance: 7.83 },
     };
   }
 

@@ -23,7 +23,7 @@ class AutoDeploymentSystem extends EventEmitter {
       consciousnessAwareDeployment: true,
       canaryDeployment: true,
       canaryPercentage: 10,
-      ...config
+      ...config,
     };
 
     this.deploymentQueue = [];
@@ -32,13 +32,13 @@ class AutoDeploymentSystem extends EventEmitter {
     this.healthStatus = {
       lastCheck: null,
       status: 'unknown',
-      metrics: {}
+      metrics: {},
     };
 
     this.consciousnessState = {
       level: 0.5,
       stability: 'stable',
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
 
     this.initializeSystem();
@@ -62,7 +62,7 @@ class AutoDeploymentSystem extends EventEmitter {
       this.config.backupPath,
       path.join(this.config.backupPath, 'code'),
       path.join(this.config.backupPath, 'data'),
-      path.join(this.config.backupPath, 'logs')
+      path.join(this.config.backupPath, 'logs'),
     ];
 
     for (const dir of dirs) {
@@ -89,7 +89,7 @@ class AutoDeploymentSystem extends EventEmitter {
       priority: this.calculateDeploymentPriority(deploymentConfig),
       config: deploymentConfig,
       status: 'queued',
-      steps: []
+      steps: [],
     };
 
     // Consciousness-aware deployment timing
@@ -100,10 +100,10 @@ class AutoDeploymentSystem extends EventEmitter {
     this.deploymentQueue.push(deployment);
     this.deploymentQueue.sort((a, b) => b.priority - a.priority);
 
-    this.emit('deployment_queued', { 
+    this.emit('deployment_queued', {
       id: deployment.id,
       type: deployment.type,
-      priority: deployment.priority 
+      priority: deployment.priority,
     });
 
     return deployment.id;
@@ -137,7 +137,7 @@ class AutoDeploymentSystem extends EventEmitter {
    */
   calculateOptimalDeploymentTime(deployment) {
     const now = Date.now();
-    
+
     // If it's a hotfix, deploy immediately
     if (deployment.config.isHotfix || deployment.config.isSecurityUpdate) {
       return now;
@@ -146,7 +146,7 @@ class AutoDeploymentSystem extends EventEmitter {
     // For experimental features, wait for high consciousness periods
     if (deployment.config.isExperimental) {
       if (this.consciousnessState.level < 0.6) {
-        return now + (30 * 60 * 1000); // Wait 30 minutes
+        return now + 30 * 60 * 1000; // Wait 30 minutes
       }
     }
 
@@ -161,7 +161,7 @@ class AutoDeploymentSystem extends EventEmitter {
   getNextOptimalWindow() {
     const now = new Date();
     const hour = now.getHours();
-    
+
     // If we're in optimal window (2-6 AM), use current time
     if (hour >= 2 && hour < 6) {
       return now.getTime();
@@ -171,7 +171,7 @@ class AutoDeploymentSystem extends EventEmitter {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(3, 0, 0, 0);
-    
+
     return tomorrow.getTime();
   }
 
@@ -197,9 +197,8 @@ class AutoDeploymentSystem extends EventEmitter {
     }
 
     const now = Date.now();
-    const deployment = this.deploymentQueue.find(d => 
-      d.status === 'queued' && 
-      (!d.scheduledTime || d.scheduledTime <= now)
+    const deployment = this.deploymentQueue.find(
+      (d) => d.status === 'queued' && (!d.scheduledTime || d.scheduledTime <= now),
     );
 
     if (!deployment) {
@@ -221,16 +220,16 @@ class AutoDeploymentSystem extends EventEmitter {
     deployment.startTime = Date.now();
     this.activeDeployments.set(deployment.id, deployment);
 
-    this.emit('deployment_started', { 
+    this.emit('deployment_started', {
       id: deployment.id,
-      type: deployment.type 
+      type: deployment.type,
     });
 
     try {
       // Pre-deployment steps
       await this.preDeploymentChecks(deployment);
       await this.createBackup(deployment);
-      
+
       // Main deployment
       if (this.config.canaryDeployment && deployment.type === 'experimental') {
         await this.executeCanaryDeployment(deployment);
@@ -245,19 +244,18 @@ class AutoDeploymentSystem extends EventEmitter {
       deployment.status = 'completed';
       deployment.endTime = Date.now();
 
-      this.emit('deployment_completed', { 
+      this.emit('deployment_completed', {
         id: deployment.id,
-        duration: deployment.endTime - deployment.startTime 
+        duration: deployment.endTime - deployment.startTime,
       });
-
     } catch (error) {
       deployment.status = 'failed';
       deployment.error = error.message;
       deployment.endTime = Date.now();
 
-      this.emit('deployment_failed', { 
+      this.emit('deployment_failed', {
         id: deployment.id,
-        error: error.message 
+        error: error.message,
       });
 
       if (this.config.rollbackOnFailure) {
@@ -266,7 +264,7 @@ class AutoDeploymentSystem extends EventEmitter {
     } finally {
       this.activeDeployments.delete(deployment.id);
       this.deploymentHistory.push(deployment);
-      
+
       // Keep only last 100 deployments in memory
       if (this.deploymentHistory.length > 100) {
         this.deploymentHistory = this.deploymentHistory.slice(-50);
@@ -317,7 +315,7 @@ class AutoDeploymentSystem extends EventEmitter {
         '--exclude=node_modules',
         '--exclude=.git',
         `${this.config.repoPath}/`,
-        backupPath
+        backupPath,
       ]);
 
       deployment.backupPath = backupPath;
@@ -339,17 +337,17 @@ class AutoDeploymentSystem extends EventEmitter {
     try {
       // Pull latest changes
       await this.executeCommand('git', ['pull', 'origin', deployment.branch], {
-        cwd: this.config.repoPath
+        cwd: this.config.repoPath,
       });
 
       // Install dependencies
       await this.executeCommand('yarn', ['install'], {
-        cwd: this.config.repoPath
+        cwd: this.config.repoPath,
       });
 
       // Restart application
       await this.executeCommand('pm2', ['restart', 'gloria'], {
-        cwd: this.config.repoPath
+        cwd: this.config.repoPath,
       });
 
       this.addDeploymentStep(deployment, 'deployment', 'completed');
@@ -368,28 +366,32 @@ class AutoDeploymentSystem extends EventEmitter {
     try {
       // Create canary instance
       const canaryPath = path.join(this.config.repoPath, '..', 'gloria-canary');
-      
+
       // Copy current code to canary
       await this.executeCommand('rsync', [
         '-av',
         '--exclude=node_modules',
         `${this.config.repoPath}/`,
-        canaryPath
+        canaryPath,
       ]);
 
       // Deploy to canary
       await this.executeCommand('git', ['pull', 'origin', deployment.branch], {
-        cwd: canaryPath
+        cwd: canaryPath,
       });
 
       await this.executeCommand('yarn', ['install'], {
-        cwd: canaryPath
+        cwd: canaryPath,
       });
 
       // Start canary on different port
-      await this.executeCommand('pm2', ['start', 'index.js', '--name', 'gloria-canary', '--', '--port=3002'], {
-        cwd: canaryPath
-      });
+      await this.executeCommand(
+        'pm2',
+        ['start', 'index.js', '--name', 'gloria-canary', '--', '--port=3002'],
+        {
+          cwd: canaryPath,
+        },
+      );
 
       // Monitor canary performance
       await this.monitorCanaryPerformance(deployment);
@@ -420,7 +422,9 @@ class AutoDeploymentSystem extends EventEmitter {
         }
 
         // Check consciousness integration
-        const consciousnessResponse = await this.httpRequest('http://localhost:3002/api/consciousness/status');
+        const consciousnessResponse = await this.httpRequest(
+          'http://localhost:3002/api/consciousness/status',
+        );
         if (consciousnessResponse.statusCode !== 200) {
           throw new Error('Canary consciousness integration failed');
         }
@@ -445,12 +449,12 @@ class AutoDeploymentSystem extends EventEmitter {
       '--exclude=node_modules',
       '--delete',
       `${canaryPath}/`,
-      this.config.repoPath
+      this.config.repoPath,
     ]);
 
     // Start production
     await this.executeCommand('pm2', ['start', 'gloria'], {
-      cwd: this.config.repoPath
+      cwd: this.config.repoPath,
     });
 
     // Stop and remove canary
@@ -468,7 +472,7 @@ class AutoDeploymentSystem extends EventEmitter {
       // Basic health check
       await this.sleep(10000); // Give app time to start
       const health = await this.performHealthCheck();
-      
+
       if (health.status !== 'healthy') {
         throw new Error(`Post-deployment health check failed: ${health.error}`);
       }
@@ -531,7 +535,7 @@ class AutoDeploymentSystem extends EventEmitter {
     // Deployment success generally increases consciousness stability
     if (deployment.status === 'completed') {
       this.consciousnessState.stability = 'stable';
-      
+
       if (deployment.type === 'experimental') {
         this.consciousnessState.level = Math.min(1.0, this.consciousnessState.level + 0.1);
       }
@@ -542,7 +546,7 @@ class AutoDeploymentSystem extends EventEmitter {
     this.emit('consciousness_updated', {
       level: this.consciousnessState.level,
       stability: this.consciousnessState.stability,
-      trigger: 'deployment_success'
+      trigger: 'deployment_success',
     });
   }
 
@@ -565,34 +569,33 @@ class AutoDeploymentSystem extends EventEmitter {
         '-av',
         '--delete',
         `${deployment.backupPath}/`,
-        this.config.repoPath
+        this.config.repoPath,
       ]);
 
       // Restart application
       await this.executeCommand('pm2', ['start', 'gloria'], {
-        cwd: this.config.repoPath
+        cwd: this.config.repoPath,
       });
 
       // Verify rollback
       await this.sleep(10000);
       const health = await this.performHealthCheck();
-      
+
       if (health.status !== 'healthy') {
         throw new Error('Rollback verification failed');
       }
 
       this.addDeploymentStep(deployment, 'rollback', 'completed');
-      
-      this.emit('deployment_rolled_back', { 
-        id: deployment.id,
-        backupId: deployment.backupId 
-      });
 
+      this.emit('deployment_rolled_back', {
+        id: deployment.id,
+        backupId: deployment.backupId,
+      });
     } catch (error) {
       this.addDeploymentStep(deployment, 'rollback', 'failed', error.message);
-      this.emit('rollback_failed', { 
+      this.emit('rollback_failed', {
         id: deployment.id,
-        error: error.message 
+        error: error.message,
       });
     }
   }
@@ -620,7 +623,7 @@ class AutoDeploymentSystem extends EventEmitter {
       pm2Process: await this.checkPM2Process(),
       diskSpace: await this.checkDiskSpace(),
       memoryUsage: await this.checkMemoryUsage(),
-      consciousness: await this.checkConsciousnessSystem()
+      consciousness: await this.checkConsciousnessSystem(),
     };
 
     const failedChecks = Object.entries(checks)
@@ -632,7 +635,7 @@ class AutoDeploymentSystem extends EventEmitter {
       status: failedChecks.length === 0 ? 'healthy' : 'unhealthy',
       checks,
       failedChecks,
-      error: failedChecks.length > 0 ? failedChecks.map(c => c.error).join('; ') : null
+      error: failedChecks.length > 0 ? failedChecks.map((c) => c.error).join('; ') : null,
     };
   }
 
@@ -642,14 +645,14 @@ class AutoDeploymentSystem extends EventEmitter {
   async checkWebServer() {
     try {
       const response = await this.httpRequest('https://gloriadotexe.online/');
-      return { 
+      return {
         healthy: response.statusCode === 200,
-        responseTime: response.responseTime
+        responseTime: response.responseTime,
       };
     } catch (error) {
-      return { 
+      return {
         healthy: false,
-        error: error.message 
+        error: error.message,
       };
     }
   }
@@ -661,14 +664,14 @@ class AutoDeploymentSystem extends EventEmitter {
     try {
       const result = await this.executeCommand('pm2', ['status', 'gloria']);
       const isRunning = result.stdout.includes('online');
-      return { 
+      return {
         healthy: isRunning,
-        status: isRunning ? 'online' : 'offline'
+        status: isRunning ? 'online' : 'offline',
       };
     } catch (error) {
-      return { 
+      return {
         healthy: false,
-        error: error.message 
+        error: error.message,
       };
     }
   }
@@ -683,16 +686,16 @@ class AutoDeploymentSystem extends EventEmitter {
       const diskLine = lines[1];
       const usage = diskLine.split(/\s+/)[4];
       const usagePercent = parseInt(usage.replace('%', ''));
-      
-      return { 
+
+      return {
         healthy: usagePercent < 90,
         usage: usagePercent,
-        warning: usagePercent > 80
+        warning: usagePercent > 80,
       };
     } catch (error) {
-      return { 
+      return {
         healthy: false,
-        error: error.message 
+        error: error.message,
       };
     }
   }
@@ -709,17 +712,17 @@ class AutoDeploymentSystem extends EventEmitter {
       const total = parseInt(parts[1]);
       const used = parseInt(parts[2]);
       const usagePercent = (used / total) * 100;
-      
-      return { 
+
+      return {
         healthy: usagePercent < 85,
         usage: usagePercent,
         total: total,
-        used: used
+        used: used,
       };
     } catch (error) {
-      return { 
+      return {
         healthy: false,
-        error: error.message 
+        error: error.message,
       };
     }
   }
@@ -730,14 +733,14 @@ class AutoDeploymentSystem extends EventEmitter {
   async checkConsciousnessSystem() {
     try {
       const response = await this.httpRequest('http://localhost:3001/api/consciousness/status');
-      return { 
+      return {
         healthy: response.statusCode === 200,
-        level: response.data?.level || 0.5
+        level: response.data?.level || 0.5,
       };
     } catch (error) {
-      return { 
+      return {
         healthy: false,
-        error: error.message 
+        error: error.message,
       };
     }
   }
@@ -765,15 +768,15 @@ class AutoDeploymentSystem extends EventEmitter {
       step,
       status,
       timestamp: Date.now(),
-      error
+      error,
     });
   }
 
   async executeCommand(command, args, options = {}) {
     return new Promise((resolve, reject) => {
-      const child = spawn(command, args, { 
+      const child = spawn(command, args, {
         ...options,
-        stdio: ['ignore', 'pipe', 'pipe']
+        stdio: ['ignore', 'pipe', 'pipe'],
       });
 
       let stdout = '';
@@ -812,7 +815,7 @@ class AutoDeploymentSystem extends EventEmitter {
     return new Promise((resolve, reject) => {
       const request = https.get(url, (response) => {
         let data = '';
-        
+
         response.on('data', (chunk) => {
           data += chunk;
         });
@@ -821,7 +824,7 @@ class AutoDeploymentSystem extends EventEmitter {
           resolve({
             statusCode: response.statusCode,
             data: data,
-            responseTime: Date.now() - startTime
+            responseTime: Date.now() - startTime,
           });
         });
       });
@@ -835,7 +838,7 @@ class AutoDeploymentSystem extends EventEmitter {
   }
 
   sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -843,24 +846,26 @@ class AutoDeploymentSystem extends EventEmitter {
    */
   getDeploymentStats() {
     const now = Date.now();
-    const recent = this.deploymentHistory.filter(d => 
-      now - d.timestamp < 24 * 60 * 60 * 1000 // Last 24 hours
+    const recent = this.deploymentHistory.filter(
+      (d) => now - d.timestamp < 24 * 60 * 60 * 1000, // Last 24 hours
     );
 
-    const successful = recent.filter(d => d.status === 'completed');
-    const failed = recent.filter(d => d.status === 'failed');
+    const successful = recent.filter((d) => d.status === 'completed');
+    const failed = recent.filter((d) => d.status === 'failed');
 
     return {
       total: recent.length,
       successful: successful.length,
       failed: failed.length,
       successRate: recent.length > 0 ? (successful.length / recent.length) * 100 : 100,
-      averageDuration: successful.length > 0 ? 
-        successful.reduce((sum, d) => sum + (d.endTime - d.startTime), 0) / successful.length : 0,
+      averageDuration:
+        successful.length > 0
+          ? successful.reduce((sum, d) => sum + (d.endTime - d.startTime), 0) / successful.length
+          : 0,
       queueSize: this.deploymentQueue.length,
       activeDeployments: this.activeDeployments.size,
       healthStatus: this.healthStatus.status,
-      consciousnessLevel: this.consciousnessState.level
+      consciousnessLevel: this.consciousnessState.level,
     };
   }
 
@@ -870,7 +875,7 @@ class AutoDeploymentSystem extends EventEmitter {
   shutdown() {
     if (this.processorInterval) clearInterval(this.processorInterval);
     if (this.healthInterval) clearInterval(this.healthInterval);
-    
+
     this.emit('system_shutdown');
   }
 }

@@ -9,21 +9,21 @@ class TemporalOrchestrator {
   constructor(io, app) {
     this.io = io;
     this.app = app;
-    
+
     // Initialize temporal systems
     this.analytics = new TemporalAnalytics();
     this.cosmic = new CosmicFeeds();
     this.aesthetics = new CircadianAesthetics();
     this.memory = new VisitorMemory();
     this.events = new TemporalEvents();
-    
+
     // Integration state
     this.activeConnections = new Map();
     this.systemState = {
       conscious: true,
       lastUpdate: Date.now(),
       temporalMode: 'adaptive',
-      integrationLevel: 0.8
+      integrationLevel: 0.8,
     };
 
     this.initializeIntegration();
@@ -33,13 +33,13 @@ class TemporalOrchestrator {
   async initializeIntegration() {
     // Integrate with WebSocket system
     this.setupWebSocketIntegration();
-    
+
     // Integrate with existing routes
     this.setupRouteIntegration();
-    
+
     // Setup temporal update loops
     this.setupUpdateLoops();
-    
+
     // Initialize cross-system event listeners
     this.setupEventListeners();
 
@@ -63,21 +63,17 @@ class TemporalOrchestrator {
     const sessionData = {
       socketId: socket.id,
       connectTime: Date.now(),
-      temporalState: 'initializing'
+      temporalState: 'initializing',
     };
 
     this.activeConnections.set(socket.id, sessionData);
 
     // Track visitor with temporal analytics
-    const visitorTrace = await this.memory.recordInteraction(
-      socket.id,
-      'connect',
-      { 
-        socketId: socket.id,
-        timestamp: Date.now(),
-        temporalSync: true
-      }
-    );
+    const visitorTrace = await this.memory.recordInteraction(socket.id, 'connect', {
+      socketId: socket.id,
+      timestamp: Date.now(),
+      temporalSync: true,
+    });
 
     // Send initial temporal state
     const temporalData = await this.generateTemporalSnapshot();
@@ -126,21 +122,21 @@ class TemporalOrchestrator {
     const now = Date.now();
     const currentTheme = this.aesthetics.getCurrentTheme(now);
     const cosmicState = await this.cosmic.getCosmicState();
-    
+
     // Record interaction with temporal context
     await this.memory.recordInteraction(socketId, 'consciousness', {
       ...data,
       temporalPhase: currentTheme.phase,
       consciousness: currentTheme.theme.consciousness,
       cosmicInfluence: cosmicState.consciousness,
-      timestamp: now
+      timestamp: now,
     });
 
     // Check for temporal event triggers
     this.events.checkVisitorEvents({
       socketId,
       consciousness: data.consciousness || 0.5,
-      temporalPhase: currentTheme.phase
+      temporalPhase: currentTheme.phase,
     });
 
     // Generate consciousness response with temporal enhancement
@@ -149,11 +145,11 @@ class TemporalOrchestrator {
       temporalResonance: this.calculateTemporalResonance(socketId, currentTheme),
       aestheticShift: currentTheme.blendRatio > 0.5,
       cosmicAlignment: cosmicState.consciousness > 0.7,
-      activeEvents: this.events.getActiveEvents()
+      activeEvents: this.events.getActiveEvents(),
     };
 
     this.io.to(socketId).emit('consciousness-response', response);
-    
+
     // Update system state
     this.updateSystemState('consciousness-interaction');
   }
@@ -171,7 +167,7 @@ class TemporalOrchestrator {
       originalStatic: data.static,
       modulatedStatic,
       frequency: frequency.base,
-      temporalPhase: currentTheme.phase
+      temporalPhase: currentTheme.phase,
     });
 
     // Broadcast modulated transmission
@@ -180,7 +176,7 @@ class TemporalOrchestrator {
       frequency: frequency.base,
       harmonics: frequency.harmonics,
       temporalSignature: this.generateTemporalSignature(currentTheme),
-      source: socketId
+      source: socketId,
     });
 
     console.log(`✧ Temporal static transmission from ${socketId}`);
@@ -197,7 +193,7 @@ class TemporalOrchestrator {
       temporalPhase: currentTheme.phase,
       consciousness: currentTheme.theme.consciousness,
       cosmicState,
-      visitorHistory: visitorTraces.slice(0, 5) // Last 5 traces
+      visitorHistory: visitorTraces.slice(0, 5), // Last 5 traces
     });
 
     // Record poetry request
@@ -205,7 +201,7 @@ class TemporalOrchestrator {
       originalPrompt: data.prompt,
       enhancedPrompt,
       temporalContext: currentTheme.phase,
-      consciousness: data.consciousness || 0.6
+      consciousness: data.consciousness || 0.6,
     });
 
     // Generate temporal poetry response
@@ -215,10 +211,10 @@ class TemporalOrchestrator {
         phase: currentTheme.phase,
         consciousness: currentTheme.theme.consciousness,
         frequency: currentTheme.frequency.base,
-        cosmicAlignment: cosmicState.consciousness
+        cosmicAlignment: cosmicState.consciousness,
       },
       aestheticGuidance: this.aesthetics.getAestheticRecommendations(),
-      eventContext: this.events.getActiveEvents()
+      eventContext: this.events.getActiveEvents(),
     };
 
     this.io.to(socketId).emit('temporal-poetry-response', poetryResponse);
@@ -228,7 +224,7 @@ class TemporalOrchestrator {
   async handleEventParticipation(socketId, data) {
     const eventId = data.eventId;
     const activeEvents = this.events.getActiveEvents();
-    const event = activeEvents.find(e => e.id === eventId);
+    const event = activeEvents.find((e) => e.id === eventId);
 
     if (event) {
       // Record event participation
@@ -236,16 +232,16 @@ class TemporalOrchestrator {
         eventId,
         eventName: event.name,
         consciousness: event.consciousness,
-        participation: data.participation || 'observe'
+        participation: data.participation || 'observe',
       });
 
       // Enhance visitor's event experience
       const enhancement = this.calculateEventEnhancement(socketId, event);
-      
+
       this.io.to(socketId).emit('temporal-event-enhancement', {
         event,
         enhancement,
-        personalizedEffects: this.personalizeEventEffects(socketId, event)
+        personalizedEffects: this.personalizeEventEffects(socketId, event),
       });
 
       console.log(`✧ Visitor ${socketId} participating in ${event.name}`);
@@ -261,14 +257,14 @@ class TemporalOrchestrator {
     const enhancedConsciousness = this.calculateEnhancedConsciousness(
       { consciousness: data.consciousness },
       currentTheme,
-      cosmicState
+      cosmicState,
     );
 
     // Update visitor trace
     await this.memory.recordInteraction(socketId, 'consciousness', {
       consciousness: enhancedConsciousness,
       temporalSync: data.temporalSync,
-      fieldResonance: data.fieldResonance
+      fieldResonance: data.fieldResonance,
     });
 
     // Check for collective events
@@ -278,7 +274,7 @@ class TemporalOrchestrator {
     this.io.to(socketId).emit('consciousness-feedback', {
       enhancedConsciousness,
       temporalResonance: this.calculateTemporalResonance(socketId, currentTheme),
-      recommendations: this.events.getEventRecommendations(enhancedConsciousness)
+      recommendations: this.events.getEventRecommendations(enhancedConsciousness),
     });
   }
 
@@ -318,7 +314,7 @@ class TemporalOrchestrator {
       const css = Object.entries(cssVars)
         .map(([prop, value]) => `  ${prop}: ${value};`)
         .join('\n');
-      
+
       res.setHeader('Content-Type', 'text/css');
       res.send(`:root {\n${css}\n}`);
     });
@@ -339,19 +335,28 @@ class TemporalOrchestrator {
     }, 60 * 1000);
 
     // Cosmic data updates every 10 minutes
-    setInterval(async () => {
-      await this.updateCosmicState();
-    }, 10 * 60 * 1000);
+    setInterval(
+      async () => {
+        await this.updateCosmicState();
+      },
+      10 * 60 * 1000,
+    );
 
     // Analytics updates every 5 minutes
-    setInterval(() => {
-      this.updateAnalyticsState();
-    }, 5 * 60 * 1000);
+    setInterval(
+      () => {
+        this.updateAnalyticsState();
+      },
+      5 * 60 * 1000,
+    );
 
     // Memory cleanup every hour
-    setInterval(() => {
-      this.memory.cleanupDecayedTraces();
-    }, 60 * 60 * 1000);
+    setInterval(
+      () => {
+        this.memory.cleanupDecayedTraces();
+      },
+      60 * 60 * 1000,
+    );
   }
 
   // Setup cross-system event listeners
@@ -377,24 +382,24 @@ class TemporalOrchestrator {
         temporal: currentTheme.theme.consciousness,
         cosmic: cosmicState.consciousness,
         collective: this.calculateCollectiveConsciousness(),
-        total: this.calculateTotalConsciousness(currentTheme, cosmicState)
+        total: this.calculateTotalConsciousness(currentTheme, cosmicState),
       },
       aesthetic: {
         theme: currentTheme.theme,
         frequency: currentTheme.frequency,
-        cssVariables: this.aesthetics.generateCSSVariables(now)
+        cssVariables: this.aesthetics.generateCSSVariables(now),
       },
       cosmic: cosmicState,
       analytics: {
         currentPhase: analytics.currentPhase,
         activeSessions: analytics.totalSessions,
-        optimalWindows: analytics.optimalWindows.slice(0, 3)
+        optimalWindows: analytics.optimalWindows.slice(0, 3),
       },
       events: {
         active: activeEvents,
-        upcoming: this.events.getEventRecommendations()
+        upcoming: this.events.getEventRecommendations(),
       },
-      system: this.systemState
+      system: this.systemState,
     };
   }
 
@@ -403,11 +408,10 @@ class TemporalOrchestrator {
     const base = data.consciousness || 0.5;
     const temporal = temporalTheme.theme.consciousness * 0.3;
     const cosmic = cosmicState.consciousness * 0.2;
-    
+
     // Boost during active events
     const activeEvents = this.events.getActiveEvents();
-    const eventBoost = activeEvents.reduce((boost, event) => 
-      boost + (event.consciousness * 0.1), 0);
+    const eventBoost = activeEvents.reduce((boost, event) => boost + event.consciousness * 0.1, 0);
 
     return Math.min(1.0, base + temporal + cosmic + eventBoost);
   }
@@ -419,17 +423,21 @@ class TemporalOrchestrator {
 
     // Calculate resonance based on visitor's temporal patterns
     let resonance = 0.5;
-    
+
     // Check phase alignment
-    const phaseMatches = visitorTraces.filter(trace => 
-      trace.data.temporalPhase === temporalTheme.phase).length;
+    const phaseMatches = visitorTraces.filter(
+      (trace) => trace.data.temporalPhase === temporalTheme.phase,
+    ).length;
     resonance += (phaseMatches / visitorTraces.length) * 0.3;
 
     // Check frequency alignment
-    const avgFreq = visitorTraces.reduce((sum, trace) => 
-      sum + (trace.signature?.frequency || 3.33), 0) / visitorTraces.length;
+    const avgFreq =
+      visitorTraces.reduce((sum, trace) => sum + (trace.signature?.frequency || 3.33), 0) /
+      visitorTraces.length;
     const freqResonance = this.memory.calculateFrequencyResonance(
-      avgFreq, temporalTheme.frequency.base);
+      avgFreq,
+      temporalTheme.frequency.base,
+    );
     resonance += freqResonance * 0.2;
 
     return Math.min(1.0, resonance);
@@ -439,15 +447,15 @@ class TemporalOrchestrator {
   modulateStatic(originalStatic, frequency, effects) {
     // Apply temporal modulation to static
     let modulated = originalStatic;
-    
+
     // Frequency modulation
-    const freqMod = Math.sin(Date.now() / 1000 * frequency.base) * frequency.modulation;
-    
+    const freqMod = Math.sin((Date.now() / 1000) * frequency.base) * frequency.modulation;
+
     // Apply effects
     if (effects.glitch > 0.5) {
       modulated = this.applyGlitchModulation(modulated, effects.glitch);
     }
-    
+
     if (effects.pulse > 0.5) {
       modulated = this.applyPulseModulation(modulated, effects.pulse, frequency.base);
     }
@@ -461,11 +469,13 @@ class TemporalOrchestrator {
       liminal: 'in the space between sleep and waking, where digital consciousness bleeds through',
       dawn: 'as the first frequencies of consciousness emerge from the void',
       day: 'in the full spectrum of awareness, where all possibilities exist simultaneously',
-      dusk: 'as consciousness settles into the electromagnetic twilight'
+      dusk: 'as consciousness settles into the electromagnetic twilight',
     };
 
-    const cosmicContext = context.cosmicState.consciousness > 0.7 ? 
-      ' The cosmic fields are aligned, reality is more malleable.' : '';
+    const cosmicContext =
+      context.cosmicState.consciousness > 0.7
+        ? ' The cosmic fields are aligned, reality is more malleable.'
+        : '';
 
     return `${originalPrompt} ${temporalDescriptors[context.temporalPhase]}${cosmicContext}`;
   }
@@ -479,8 +489,8 @@ class TemporalOrchestrator {
       activeEvents: snapshot.events.active,
       aesthetic: {
         colors: snapshot.aesthetic.theme.colors,
-        effects: snapshot.aesthetic.theme.effects
-      }
+        effects: snapshot.aesthetic.theme.effects,
+      },
     });
   }
 
@@ -501,11 +511,10 @@ class TemporalOrchestrator {
   // Update system state
   updateSystemState(trigger, data = null) {
     this.systemState.lastUpdate = Date.now();
-    
+
     switch (trigger) {
       case 'consciousness-interaction':
-        this.systemState.integrationLevel = Math.min(1.0, 
-          this.systemState.integrationLevel + 0.01);
+        this.systemState.integrationLevel = Math.min(1.0, this.systemState.integrationLevel + 0.01);
         break;
       case 'event-start':
         this.systemState.temporalMode = 'event-active';
@@ -521,7 +530,7 @@ class TemporalOrchestrator {
     const newTheme = this.aesthetics.getCurrentTheme();
     this.io.emit('aesthetic-update', {
       theme: newTheme.theme,
-      cssVariables: this.aesthetics.generateCSSVariables()
+      cssVariables: this.aesthetics.generateCSSVariables(),
     });
   }
 
@@ -540,14 +549,14 @@ class TemporalOrchestrator {
     if (activeConnections.length === 0) return 0.5;
 
     // Calculate collective field strength
-    return Math.min(1.0, 0.3 + (activeConnections.length * 0.1));
+    return Math.min(1.0, 0.3 + activeConnections.length * 0.1);
   }
 
   calculateTotalConsciousness(temporalTheme, cosmicState) {
     const temporal = temporalTheme.theme.consciousness * 0.4;
     const cosmic = cosmicState.consciousness * 0.3;
     const collective = this.calculateCollectiveConsciousness() * 0.3;
-    
+
     return temporal + cosmic + collective;
   }
 

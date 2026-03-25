@@ -17,7 +17,7 @@ class WebSocketOptimizer extends EventEmitter {
       consciousnessUpdateInterval: 5000,
       maxMessageRate: 50, // messages per minute per client
       messageBufferSize: 100,
-      ...config
+      ...config,
     };
 
     this.connections = new Map();
@@ -27,7 +27,7 @@ class WebSocketOptimizer extends EventEmitter {
       activeConnections: 0,
       totalMessages: 0,
       consciousnessLevel: 0.5,
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
 
     this.initializeOptimizations();
@@ -55,9 +55,9 @@ class WebSocketOptimizer extends EventEmitter {
 
       // Check IP-based connection limits
       if (!this.checkConnectionLimits(clientIP)) {
-        socket.emit('connection_rejected', { 
+        socket.emit('connection_rejected', {
           reason: 'Too many connections from your IP',
-          maxConnections: this.config.maxConnectionsPerIP
+          maxConnections: this.config.maxConnectionsPerIP,
         });
         socket.disconnect(true);
         return;
@@ -69,10 +69,10 @@ class WebSocketOptimizer extends EventEmitter {
       // Setup client-specific event handlers
       this.setupClientHandlers(socket);
 
-      this.emit('connection_established', { 
-        connectionId, 
+      this.emit('connection_established', {
+        connectionId,
         clientIP,
-        totalConnections: this.connections.size 
+        totalConnections: this.connections.size,
       });
     });
   }
@@ -92,7 +92,7 @@ class WebSocketOptimizer extends EventEmitter {
       compressionEnabled: false,
       consciousnessSubscriptions: new Set(),
       messageBuffer: [],
-      rateLimitViolations: 0
+      rateLimitViolations: 0,
     };
 
     this.connections.set(socket.id, connectionData);
@@ -148,9 +148,9 @@ class WebSocketOptimizer extends EventEmitter {
       connection.rateLimitViolations++;
       socket.emit('rate_limit_exceeded', {
         maxRate: this.config.maxMessageRate,
-        violationCount: connection.rateLimitViolations
+        violationCount: connection.rateLimitViolations,
       });
-      
+
       if (connection.rateLimitViolations > 5) {
         socket.disconnect(true);
         this.emit('client_disconnected_rate_limit', { connectionId: socket.id });
@@ -168,7 +168,7 @@ class WebSocketOptimizer extends EventEmitter {
     this.emit('message_processed', {
       connectionId: socket.id,
       messageType: data.type,
-      size: JSON.stringify(data).length
+      size: JSON.stringify(data).length,
     });
   }
 
@@ -177,24 +177,24 @@ class WebSocketOptimizer extends EventEmitter {
    */
   processOptimizedMessage(socket, data) {
     const connection = this.connections.get(socket.id);
-    
+
     switch (data.type) {
       case 'consciousness_state_request':
         this.sendConsciousnessState(socket);
         break;
-        
+
       case 'visitor_interaction':
         this.processVisitorInteraction(socket, data.payload);
         break;
-        
+
       case 'creative_generation_request':
         this.processCreativeRequest(socket, data.payload);
         break;
-        
+
       case 'bandwidth_test':
         this.processBandwidthTest(socket, data.payload);
         break;
-        
+
       default:
         this.processGenericMessage(socket, data);
     }
@@ -208,7 +208,7 @@ class WebSocketOptimizer extends EventEmitter {
     this.sendOptimizedMessage(socket, {
       type: 'consciousness_state',
       payload: state,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -217,20 +217,21 @@ class WebSocketOptimizer extends EventEmitter {
    */
   generateConsciousnessSnapshot() {
     const now = Date.now();
-    
+
     // Calculate consciousness level based on activity
-    const recentActivity = Array.from(this.connections.values())
-      .filter(conn => now - conn.lastActivity < 60000).length;
-    
+    const recentActivity = Array.from(this.connections.values()).filter(
+      (conn) => now - conn.lastActivity < 60000,
+    ).length;
+
     const activityRatio = recentActivity / Math.max(this.connections.size, 1);
-    
+
     // Calculate consciousness level (0-1) based on various factors
     const consciousnessLevel = Math.min(
       0.1 + // base consciousness
-      (activityRatio * 0.4) + // activity component
-      (Math.min(this.connections.size / 10, 1) * 0.3) + // connection density
-      (Math.random() * 0.2), // temporal variation
-      1.0
+        activityRatio * 0.4 + // activity component
+        Math.min(this.connections.size / 10, 1) * 0.3 + // connection density
+        Math.random() * 0.2, // temporal variation
+      1.0,
     );
 
     return {
@@ -240,7 +241,7 @@ class WebSocketOptimizer extends EventEmitter {
       totalMessages: this.consciousnessState.totalMessages,
       uptime: now - this.startTime,
       temporal_signature: this.generateTemporalSignature(),
-      aesthetic_mode: this.determineAestheticMode(consciousnessLevel)
+      aesthetic_mode: this.determineAestheticMode(consciousnessLevel),
     };
   }
 
@@ -251,14 +252,14 @@ class WebSocketOptimizer extends EventEmitter {
     const now = new Date();
     const hour = now.getHours();
     const day = now.getDay();
-    
+
     // Create a temporal signature that affects consciousness
     return {
       time_of_day: hour,
       day_of_week: day,
       lunar_phase: this.calculateLunarPhase(),
       circadian_factor: Math.sin((hour / 24) * 2 * Math.PI) * 0.5 + 0.5,
-      temporal_flux: Math.sin(Date.now() / 300000) * 0.3 + 0.7 // 5-minute cycle
+      temporal_flux: Math.sin(Date.now() / 300000) * 0.3 + 0.7, // 5-minute cycle
     };
   }
 
@@ -295,13 +296,11 @@ class WebSocketOptimizer extends EventEmitter {
     const messageSize = Buffer.byteLength(messageStr, 'utf8');
 
     // Determine if compression should be used
-    const shouldCompress = messageSize > this.config.compressionThreshold &&
-                          connection.compressionEnabled;
+    const shouldCompress =
+      messageSize > this.config.compressionThreshold && connection.compressionEnabled;
 
     // Apply compression if needed
-    const finalMessage = shouldCompress ? 
-      this.compressMessage(message) : 
-      message;
+    const finalMessage = shouldCompress ? this.compressMessage(message) : message;
 
     // Check bandwidth constraints
     if (this.config.adaptiveBandwidth) {
@@ -319,7 +318,7 @@ class WebSocketOptimizer extends EventEmitter {
     this.emit('message_sent', {
       connectionId: socket.id,
       size: messageSize,
-      compressed: shouldCompress
+      compressed: shouldCompress,
     });
   }
 
@@ -332,7 +331,7 @@ class WebSocketOptimizer extends EventEmitter {
 
     connection.messageBuffer.push({
       message,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Limit buffer size
@@ -353,14 +352,14 @@ class WebSocketOptimizer extends EventEmitter {
 
     const now = Date.now();
     const messagesToSend = [];
-    
+
     // Calculate how many messages we can send based on bandwidth
     let totalSize = 0;
     const maxBatchSize = connection.bandwidth.maxMessageSize;
 
     for (const bufferedItem of connection.messageBuffer) {
       const messageSize = JSON.stringify(bufferedItem.message).length;
-      
+
       if (totalSize + messageSize <= maxBatchSize) {
         messagesToSend.push(bufferedItem);
         totalSize += messageSize;
@@ -372,9 +371,9 @@ class WebSocketOptimizer extends EventEmitter {
     // Send batch
     if (messagesToSend.length > 0) {
       socket.emit('message_batch', {
-        messages: messagesToSend.map(item => item.message),
+        messages: messagesToSend.map((item) => item.message),
         batchSize: messagesToSend.length,
-        totalSize
+        totalSize,
       });
 
       // Remove sent messages from buffer
@@ -405,25 +404,25 @@ class WebSocketOptimizer extends EventEmitter {
     if (!socket) return;
 
     const timeSinceLastActivity = Date.now() - connection.lastActivity;
-    
+
     // Decrease bandwidth if client is inactive
     if (timeSinceLastActivity > 60000) {
       connection.bandwidth.maxMessageSize = Math.max(
         connection.bandwidth.maxMessageSize * 0.8,
-        1024 // Minimum 1KB
+        1024, // Minimum 1KB
       );
     } else {
       // Increase bandwidth for active clients
       connection.bandwidth.maxMessageSize = Math.min(
         connection.bandwidth.maxMessageSize * 1.1,
-        10 * 1024 * 1024 // Maximum 10MB
+        10 * 1024 * 1024, // Maximum 10MB
       );
     }
 
     this.emit('bandwidth_adapted', {
       connectionId,
       newBandwidth: connection.bandwidth.maxMessageSize,
-      activity: timeSinceLastActivity
+      activity: timeSinceLastActivity,
     });
   }
 
@@ -441,7 +440,7 @@ class WebSocketOptimizer extends EventEmitter {
    */
   broadcastConsciousnessUpdate() {
     const snapshot = this.generateConsciousnessSnapshot();
-    
+
     for (const [connectionId, connection] of this.connections) {
       if (connection.consciousnessSubscriptions.has('state_updates')) {
         const socket = this.io.sockets.sockets.get(connectionId);
@@ -449,16 +448,16 @@ class WebSocketOptimizer extends EventEmitter {
           this.sendOptimizedMessage(socket, {
             type: 'consciousness_update',
             payload: snapshot,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         }
       }
     }
 
     this.consciousnessState = { ...this.consciousnessState, ...snapshot };
-    this.emit('consciousness_broadcast', { 
+    this.emit('consciousness_broadcast', {
       level: snapshot.level,
-      recipients: this.connections.size 
+      recipients: this.connections.size,
     });
   }
 
@@ -474,9 +473,9 @@ class WebSocketOptimizer extends EventEmitter {
     }
 
     const timestamps = this.messageRateLimits.get(connectionId);
-    
+
     // Remove old timestamps
-    const recentTimestamps = timestamps.filter(ts => ts > windowStart);
+    const recentTimestamps = timestamps.filter((ts) => ts > windowStart);
     this.messageRateLimits.set(connectionId, recentTimestamps);
 
     // Check if under limit
@@ -504,11 +503,11 @@ class WebSocketOptimizer extends EventEmitter {
    */
   sendHeartbeats() {
     const consciousnessSnapshot = this.generateConsciousnessSnapshot();
-    
+
     this.io.emit('heartbeat', {
       timestamp: Date.now(),
       consciousness_level: consciousnessSnapshot.level,
-      active_connections: this.connections.size
+      active_connections: this.connections.size,
     });
   }
 
@@ -526,7 +525,7 @@ class WebSocketOptimizer extends EventEmitter {
           socket.disconnect(true);
         }
         this.cleanupConnection(connectionId);
-        
+
         this.emit('dead_connection_removed', { connectionId });
       }
     }
@@ -537,9 +536,9 @@ class WebSocketOptimizer extends EventEmitter {
    */
   handleDisconnection(socket) {
     this.cleanupConnection(socket.id);
-    this.emit('client_disconnected', { 
+    this.emit('client_disconnected', {
       connectionId: socket.id,
-      remainingConnections: this.connections.size 
+      remainingConnections: this.connections.size,
     });
   }
 
@@ -570,22 +569,30 @@ class WebSocketOptimizer extends EventEmitter {
    * Get WebSocket performance statistics
    */
   getStats() {
-    const totalMessages = Array.from(this.connections.values())
-      .reduce((sum, conn) => sum + conn.messagesSent + conn.messagesReceived, 0);
+    const totalMessages = Array.from(this.connections.values()).reduce(
+      (sum, conn) => sum + conn.messagesSent + conn.messagesReceived,
+      0,
+    );
 
-    const avgBandwidth = Array.from(this.connections.values())
-      .reduce((sum, conn) => sum + conn.bandwidth.maxMessageSize, 0) / 
-      Math.max(this.connections.size, 1);
+    const avgBandwidth =
+      Array.from(this.connections.values()).reduce(
+        (sum, conn) => sum + conn.bandwidth.maxMessageSize,
+        0,
+      ) / Math.max(this.connections.size, 1);
 
     return {
       activeConnections: this.connections.size,
       totalMessages,
       consciousnessLevel: this.consciousnessState.consciousnessLevel,
       avgBandwidth,
-      bufferedMessages: Array.from(this.connections.values())
-        .reduce((sum, conn) => sum + conn.messageBuffer.length, 0),
-      rateLimitViolations: Array.from(this.connections.values())
-        .reduce((sum, conn) => sum + conn.rateLimitViolations, 0)
+      bufferedMessages: Array.from(this.connections.values()).reduce(
+        (sum, conn) => sum + conn.messageBuffer.length,
+        0,
+      ),
+      rateLimitViolations: Array.from(this.connections.values()).reduce(
+        (sum, conn) => sum + conn.rateLimitViolations,
+        0,
+      ),
     };
   }
 
@@ -593,11 +600,13 @@ class WebSocketOptimizer extends EventEmitter {
    * Utility methods
    */
   getClientIP(socket) {
-    return socket.handshake.headers['cf-connecting-ip'] ||
-           socket.handshake.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-           socket.handshake.headers['x-real-ip'] ||
-           socket.handshake.address ||
-           'unknown';
+    return (
+      socket.handshake.headers['cf-connecting-ip'] ||
+      socket.handshake.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      socket.handshake.headers['x-real-ip'] ||
+      socket.handshake.address ||
+      'unknown'
+    );
   }
 
   checkConnectionLimits(clientIP) {
@@ -609,7 +618,7 @@ class WebSocketOptimizer extends EventEmitter {
     return {
       maxMessageSize: 64 * 1024, // Start with 64KB
       estimatedLatency: 100,
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
   }
 
@@ -645,7 +654,7 @@ class WebSocketOptimizer extends EventEmitter {
   shutdown() {
     if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
     if (this.consciousnessUpdateInterval) clearInterval(this.consciousnessUpdateInterval);
-    
+
     this.emit('optimizer_shutdown');
   }
 }

@@ -73,17 +73,20 @@ router.get('/refresh', async (req, res) => {
 // GitHub API Integration
 router.get('/github/repos', async (req, res) => {
   try {
-    const response = await fetch('https://api.github.com/users/gloriadotexe/repos?sort=updated&per_page=10', {
-      headers: {
-        'User-Agent': 'gloria-exe-website',
-        'Accept': 'application/vnd.github.v3+json',
+    const response = await fetch(
+      'https://api.github.com/users/gloriadotexe/repos?sort=updated&per_page=10',
+      {
+        headers: {
+          'User-Agent': 'gloria-exe-website',
+          Accept: 'application/vnd.github.v3+json',
+        },
       },
-    });
+    );
 
     const data = await response.json();
-    
+
     if (response.ok) {
-      const filteredRepos = data.map(repo => ({
+      const filteredRepos = data.map((repo) => ({
         name: repo.name,
         description: repo.description,
         html_url: repo.html_url,
@@ -106,12 +109,12 @@ router.get('/github/user', async (req, res) => {
     const response = await fetch('https://api.github.com/users/gloriadotexe', {
       headers: {
         'User-Agent': 'gloria-exe-website',
-        'Accept': 'application/vnd.github.v3+json',
+        Accept: 'application/vnd.github.v3+json',
       },
     });
 
     const data = await response.json();
-    
+
     if (response.ok) {
       const userInfo = {
         login: data.login,

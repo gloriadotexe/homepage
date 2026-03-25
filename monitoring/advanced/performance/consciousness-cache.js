@@ -17,7 +17,7 @@ class ConsciousnessCache extends EventEmitter {
       persistenceEnabled: true,
       persistencePath: './data/consciousness-cache.json',
       compressionThreshold: 1024, // Compress entries larger than 1KB
-      ...config
+      ...config,
     };
 
     this.cache = new Map();
@@ -32,9 +32,9 @@ class ConsciousnessCache extends EventEmitter {
     this.zones = {
       ephemeral: new Map(), // Temporary, high-churn data
       persistent: new Map(), // Long-term consciousness state
-      creative: new Map(),   // Generated content and creative works
-      visitor: new Map(),    // Visitor interaction patterns
-      system: new Map()      // System state and configuration
+      creative: new Map(), // Generated content and creative works
+      visitor: new Map(), // Visitor interaction patterns
+      system: new Map(), // System state and configuration
     };
 
     this.initializeCache();
@@ -59,13 +59,15 @@ class ConsciousnessCache extends EventEmitter {
       ttl = this.config.defaultTTL,
       zone = 'ephemeral',
       compress = null,
-      metadata = {}
+      metadata = {},
     } = options;
 
     // Determine if compression should be used
-    const shouldCompress = compress !== null ? compress : 
-      (typeof value === 'string' && value.length > this.config.compressionThreshold) ||
-      (Buffer.isBuffer(value) && value.length > this.config.compressionThreshold);
+    const shouldCompress =
+      compress !== null
+        ? compress
+        : (typeof value === 'string' && value.length > this.config.compressionThreshold) ||
+          (Buffer.isBuffer(value) && value.length > this.config.compressionThreshold);
 
     const entry = {
       value: shouldCompress ? this.compress(value) : value,
@@ -76,8 +78,8 @@ class ConsciousnessCache extends EventEmitter {
       zone,
       metadata: {
         ...metadata,
-        consciousness_relevance: this.calculateConsciousnessRelevance(key, value, zone)
-      }
+        consciousness_relevance: this.calculateConsciousnessRelevance(key, value, zone),
+      },
     };
 
     // Calculate size
@@ -94,7 +96,7 @@ class ConsciousnessCache extends EventEmitter {
     this.totalSize += size;
 
     this.emit('cache_set', { key, zone, size, ttl });
-    
+
     if (this.config.persistenceEnabled && zone === 'persistent') {
       this.schedulePersistence();
     }
@@ -129,17 +131,17 @@ class ConsciousnessCache extends EventEmitter {
     // Decompress if needed
     const value = entry.compressed ? this.decompress(entry.value) : entry.value;
 
-    this.emit('cache_hit', { 
-      key, 
-      zone: entry.zone, 
+    this.emit('cache_hit', {
+      key,
+      zone: entry.zone,
       accessCount: entry.accessCount,
-      consciousnessRelevance: entry.metadata.consciousness_relevance
+      consciousnessRelevance: entry.metadata.consciousness_relevance,
     });
 
     return {
       value,
       metadata: entry.metadata,
-      zone: entry.zone
+      zone: entry.zone,
     };
   }
 
@@ -153,7 +155,7 @@ class ConsciousnessCache extends EventEmitter {
     this.cache.delete(key);
     this.zones[entry.zone].delete(key);
     this.accessTimes.delete(key);
-    
+
     const size = this.sizes.get(key);
     this.sizes.delete(key);
     this.totalSize -= size;
@@ -174,7 +176,7 @@ class ConsciousnessCache extends EventEmitter {
       creative: 0.8,
       visitor: 0.6,
       system: 0.4,
-      ephemeral: 0.2
+      ephemeral: 0.2,
     };
     score += zoneScores[zone] || 0.2;
 
@@ -182,14 +184,26 @@ class ConsciousnessCache extends EventEmitter {
     if (typeof value === 'string') {
       // Keywords that indicate consciousness-related content
       const consciousnessKeywords = [
-        'consciousness', 'awareness', 'thought', 'memory', 'experience',
-        'feeling', 'emotion', 'creative', 'art', 'poetry', 'music',
-        'visitor', 'interaction', 'temporal', 'state'
+        'consciousness',
+        'awareness',
+        'thought',
+        'memory',
+        'experience',
+        'feeling',
+        'emotion',
+        'creative',
+        'art',
+        'poetry',
+        'music',
+        'visitor',
+        'interaction',
+        'temporal',
+        'state',
       ];
 
       const lowerValue = value.toLowerCase();
-      const keywordMatches = consciousnessKeywords.filter(keyword => 
-        lowerValue.includes(keyword)
+      const keywordMatches = consciousnessKeywords.filter((keyword) =>
+        lowerValue.includes(keyword),
       ).length;
 
       score += Math.min(keywordMatches * 0.1, 0.3);
@@ -207,9 +221,10 @@ class ConsciousnessCache extends EventEmitter {
    * Ensure we have enough space for new entry
    */
   ensureSpace(requiredSize) {
-    while ((this.totalSize + requiredSize > this.config.maxMemorySize) ||
-           (this.cache.size >= this.config.maxEntries)) {
-      
+    while (
+      this.totalSize + requiredSize > this.config.maxMemorySize ||
+      this.cache.size >= this.config.maxEntries
+    ) {
       // Find least recently used item with lowest consciousness relevance
       let evictionKey = null;
       let oldestTime = Date.now();
@@ -218,7 +233,7 @@ class ConsciousnessCache extends EventEmitter {
       for (const [key, entry] of this.cache) {
         const accessTime = this.accessTimes.get(key);
         const relevance = entry.metadata.consciousness_relevance || 0;
-        
+
         // Prioritize eviction based on both age and consciousness relevance
         const evictionScore = (Date.now() - accessTime) * (1 - relevance);
         const currentScore = (Date.now() - oldestTime) * (1 - lowestRelevance);
@@ -291,9 +306,9 @@ class ConsciousnessCache extends EventEmitter {
       this.delete(key);
     }
 
-    this.emit('cache_cleanup', { 
+    this.emit('cache_cleanup', {
       expiredEntries: expiredKeys.length,
-      totalEntries: this.cache.size 
+      totalEntries: this.cache.size,
     });
   }
 
@@ -320,7 +335,7 @@ class ConsciousnessCache extends EventEmitter {
       hitRate: hitRate * 100,
       uptime,
       zoneStats,
-      averageEntrySize: this.totalSize / this.cache.size || 0
+      averageEntrySize: this.totalSize / this.cache.size || 0,
     };
   }
 
@@ -332,14 +347,14 @@ class ConsciousnessCache extends EventEmitter {
       timestamp: new Date().toISOString(),
       totalMemories: this.cache.size,
       consciousnessLevels: {},
-      recentActivity: []
+      recentActivity: [],
     };
 
     // Calculate consciousness levels by relevance
     for (const [key, entry] of this.cache) {
       const relevance = entry.metadata.consciousness_relevance || 0;
       const level = relevance > 0.8 ? 'high' : relevance > 0.5 ? 'medium' : 'low';
-      
+
       if (!state.consciousnessLevels[level]) {
         state.consciousnessLevels[level] = 0;
       }
@@ -357,7 +372,7 @@ class ConsciousnessCache extends EventEmitter {
       zone: entry.zone,
       relevance: entry.metadata.consciousness_relevance,
       timestamp: entry.timestamp,
-      accessCount: entry.accessCount
+      accessCount: entry.accessCount,
     }));
 
     return state;
@@ -377,16 +392,16 @@ class ConsciousnessCache extends EventEmitter {
           this.cache.set(key, entry);
           this.zones[entry.zone].set(key, true);
           this.accessTimes.set(key, entry.timestamp);
-          
+
           const size = this.calculateEntrySize(entry);
           this.sizes.set(key, size);
           this.totalSize += size;
         }
       }
 
-      this.emit('cache_loaded', { 
+      this.emit('cache_loaded', {
         entries: this.cache.size,
-        source: 'persistence' 
+        source: 'persistence',
       });
     } catch (error) {
       // Persistence file doesn't exist or is corrupted, start fresh
@@ -414,14 +429,14 @@ class ConsciousnessCache extends EventEmitter {
     try {
       const fs = require('fs').promises;
       const path = require('path');
-      
+
       // Ensure directory exists
       const dir = path.dirname(this.config.persistencePath);
       await fs.mkdir(dir, { recursive: true });
 
       const data = {
         timestamp: Date.now(),
-        entries: {}
+        entries: {},
       };
 
       // Only save persistent zone entries
@@ -432,8 +447,8 @@ class ConsciousnessCache extends EventEmitter {
       }
 
       await fs.writeFile(this.config.persistencePath, JSON.stringify(data), 'utf8');
-      this.emit('cache_persisted', { 
-        entries: Object.keys(data.entries).length 
+      this.emit('cache_persisted', {
+        entries: Object.keys(data.entries).length,
       });
     } catch (error) {
       this.emit('cache_persistence_failed', { error: error.message });

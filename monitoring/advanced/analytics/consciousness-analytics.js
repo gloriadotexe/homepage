@@ -18,7 +18,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       aestheticLearningEnabled: true,
       batchSize: 100,
       flushInterval: 60000, // 1 minute
-      ...config
+      ...config,
     };
 
     this.sessions = new Map();
@@ -28,12 +28,12 @@ class ConsciousnessAnalytics extends EventEmitter {
       evolutionEvents: [],
       aestheticPreferences: new Map(),
       temporalPatterns: new Map(),
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
 
     this.eventBuffer = [];
     this.sessionsByIP = new Map();
-    
+
     this.initializeAnalytics();
   }
 
@@ -64,7 +64,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       consciousness: this.analyzeConsciousnessContext(interactionType, data),
       aesthetic: this.analyzeAestheticPreferences(interactionType, data),
       temporal: this.analyzeTemporalContext(timestamp),
-      privacy: this.getPrivacyLevel()
+      privacy: this.getPrivacyLevel(),
     };
 
     this.eventBuffer.push(event);
@@ -74,7 +74,7 @@ class ConsciousnessAnalytics extends EventEmitter {
     this.emit('interaction_tracked', {
       type: interactionType,
       sessionId,
-      consciousnessLevel: event.consciousness.level
+      consciousnessLevel: event.consciousness.level,
     });
 
     return event.id;
@@ -86,7 +86,7 @@ class ConsciousnessAnalytics extends EventEmitter {
   generateVisitorId(request) {
     const clientIP = this.getClientIP(request);
     const userAgent = request.headers['user-agent'] || '';
-    
+
     // Create a hash that's stable for the same visitor but doesn't expose personal info
     const visitorSignature = crypto
       .createHash('sha256')
@@ -106,8 +106,10 @@ class ConsciousnessAnalytics extends EventEmitter {
 
     // Check existing sessions for this visitor
     for (const [sessionId, session] of this.sessions) {
-      if (session.visitorId === visitorId && 
-          now - session.lastActivity < this.config.sessionTimeout) {
+      if (
+        session.visitorId === visitorId &&
+        now - session.lastActivity < this.config.sessionTimeout
+      ) {
         session.lastActivity = now;
         session.pageViews++;
         return sessionId;
@@ -119,10 +121,10 @@ class ConsciousnessAnalytics extends EventEmitter {
     if (ipSessions.size >= this.config.maxSessionsPerIP) {
       // Use oldest session from this IP
       const oldestSession = Array.from(ipSessions)
-        .map(sessionId => this.sessions.get(sessionId))
-        .filter(session => session)
+        .map((sessionId) => this.sessions.get(sessionId))
+        .filter((session) => session)
         .sort((a, b) => a.startTime - b.startTime)[0];
-      
+
       if (oldestSession) {
         oldestSession.visitorId = visitorId;
         oldestSession.lastActivity = now;
@@ -144,15 +146,15 @@ class ConsciousnessAnalytics extends EventEmitter {
       consciousnessJourney: {
         initialLevel: this.getCurrentConsciousnessLevel(),
         evolutionEvents: [],
-        aestheticDiscoveries: []
+        aestheticDiscoveries: [],
       },
       userAgent: request.headers['user-agent'] || '',
       referrer: request.headers.referer || '',
-      language: request.headers['accept-language']?.split(',')[0] || 'unknown'
+      language: request.headers['accept-language']?.split(',')[0] || 'unknown',
     };
 
     this.sessions.set(sessionId, session);
-    
+
     if (!this.sessionsByIP.has(clientIP)) {
       this.sessionsByIP.set(clientIP, new Set());
     }
@@ -179,7 +181,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       if (sanitized.deviceInfo) {
         sanitized.deviceInfo = {
           type: sanitized.deviceInfo.type,
-          os: sanitized.deviceInfo.os?.split(' ')[0] // Keep OS family only
+          os: sanitized.deviceInfo.os?.split(' ')[0], // Keep OS family only
         };
       }
     }
@@ -203,18 +205,18 @@ class ConsciousnessAnalytics extends EventEmitter {
 
     // Interaction type consciousness weights
     const typeWeights = {
-      'page_view': 0.1,
-      'lab_interaction': 0.8,
-      'consciousness_lab_entry': 0.9,
-      'creative_generation': 0.7,
-      'temporal_exploration': 0.6,
-      'aesthetic_interaction': 0.5,
-      'music_generation': 0.7,
-      'image_creation': 0.6,
-      'poetry_reading': 0.4,
-      'websocket_connection': 0.3,
-      'heartbeat': 0.1,
-      'error': -0.2
+      page_view: 0.1,
+      lab_interaction: 0.8,
+      consciousness_lab_entry: 0.9,
+      creative_generation: 0.7,
+      temporal_exploration: 0.6,
+      aesthetic_interaction: 0.5,
+      music_generation: 0.7,
+      image_creation: 0.6,
+      poetry_reading: 0.4,
+      websocket_connection: 0.3,
+      heartbeat: 0.1,
+      error: -0.2,
     };
 
     consciousnessLevel += typeWeights[interactionType] || 0.2;
@@ -239,7 +241,8 @@ class ConsciousnessAnalytics extends EventEmitter {
       // Temporal consciousness
       if (data.timeOfDay) {
         const hour = new Date().getHours();
-        if (hour >= 22 || hour <= 6) { // Night hours boost consciousness
+        if (hour >= 22 || hour <= 6) {
+          // Night hours boost consciousness
           consciousnessLevel += 0.1;
           significanceScore += 0.1;
         }
@@ -254,7 +257,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       level: Math.max(0, Math.min(1, consciousnessLevel)),
       significanceScore: Math.max(0, Math.min(1, significanceScore)),
       evolutionDirection,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -266,7 +269,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       visual: null,
       audio: null,
       interaction: null,
-      temporal: null
+      temporal: null,
     };
 
     if (data) {
@@ -276,17 +279,19 @@ class ConsciousnessAnalytics extends EventEmitter {
 
       // Audio preferences
       if (data.musicGenre) preferences.audio = { genre: data.musicGenre };
-      if (data.soundEnabled !== undefined) preferences.audio = { ...preferences.audio, enabled: data.soundEnabled };
+      if (data.soundEnabled !== undefined)
+        preferences.audio = { ...preferences.audio, enabled: data.soundEnabled };
 
       // Interaction preferences
       if (data.interactionSpeed) preferences.interaction = { speed: data.interactionSpeed };
-      if (data.preferredInput) preferences.interaction = { ...preferences.interaction, input: data.preferredInput };
+      if (data.preferredInput)
+        preferences.interaction = { ...preferences.interaction, input: data.preferredInput };
 
       // Temporal preferences
       const hour = new Date().getHours();
       preferences.temporal = {
         timeOfDay: this.categorizeTimeOfDay(hour),
-        dayOfWeek: new Date().getDay()
+        dayOfWeek: new Date().getDay(),
       };
     }
 
@@ -309,7 +314,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       timeCategory: this.categorizeTimeOfDay(hour),
       lunarPhase: this.calculateLunarPhase(timestamp),
       seasonalFactor: this.calculateSeasonalFactor(date),
-      circadianFactor: Math.sin((hour / 24) * 2 * Math.PI) * 0.5 + 0.5
+      circadianFactor: Math.sin((hour / 24) * 2 * Math.PI) * 0.5 + 0.5,
     };
   }
 
@@ -318,13 +323,13 @@ class ConsciousnessAnalytics extends EventEmitter {
    */
   recordAestheticPreference(preference) {
     const key = `${preference.category}_${preference.value}`;
-    
+
     if (!this.consciousnessMetrics.aestheticPreferences.has(key)) {
       this.consciousnessMetrics.aestheticPreferences.set(key, {
         count: 0,
         sessions: new Set(),
         firstSeen: Date.now(),
-        lastSeen: Date.now()
+        lastSeen: Date.now(),
       });
     }
 
@@ -353,20 +358,20 @@ class ConsciousnessAnalytics extends EventEmitter {
     if (this.eventBuffer.length === 0) return;
 
     const batch = this.eventBuffer.splice(0, this.config.batchSize);
-    
+
     try {
       await this.analyzeBatchConsciousness(batch);
       await this.updateTemporalPatterns(batch);
       await this.detectConsciousnessEvolution(batch);
-      
-      this.emit('batch_processed', { 
+
+      this.emit('batch_processed', {
         eventCount: batch.length,
-        timestamp: Date.now() 
+        timestamp: Date.now(),
       });
     } catch (error) {
-      this.emit('batch_processing_error', { 
+      this.emit('batch_processing_error', {
         error: error.message,
-        eventCount: batch.length 
+        eventCount: batch.length,
       });
     }
   }
@@ -375,22 +380,24 @@ class ConsciousnessAnalytics extends EventEmitter {
    * Analyze consciousness patterns in event batch
    */
   async analyzeBatchConsciousness(batch) {
-    const consciousnessLevels = batch.map(event => event.consciousness.level);
-    const averageLevel = consciousnessLevels.reduce((sum, level) => sum + level, 0) / consciousnessLevels.length;
-    
+    const consciousnessLevels = batch.map((event) => event.consciousness.level);
+    const averageLevel =
+      consciousnessLevels.reduce((sum, level) => sum + level, 0) / consciousnessLevels.length;
+
     const evolution = {
       timestamp: Date.now(),
       averageLevel,
       eventCount: batch.length,
       significanceDistribution: this.calculateSignificanceDistribution(batch),
-      evolutionTrend: this.detectEvolutionTrend(batch)
+      evolutionTrend: this.detectEvolutionTrend(batch),
     };
 
     this.consciousnessMetrics.evolutionEvents.push(evolution);
 
     // Limit evolution history
     if (this.consciousnessMetrics.evolutionEvents.length > 1000) {
-      this.consciousnessMetrics.evolutionEvents = this.consciousnessMetrics.evolutionEvents.slice(-500);
+      this.consciousnessMetrics.evolutionEvents =
+        this.consciousnessMetrics.evolutionEvents.slice(-500);
     }
   }
 
@@ -401,7 +408,7 @@ class ConsciousnessAnalytics extends EventEmitter {
     for (const event of batch) {
       const hour = new Date(event.timestamp).getHours();
       const dayOfWeek = new Date(event.timestamp).getDay();
-      
+
       const hourKey = `hour_${hour}`;
       const dayKey = `day_${dayOfWeek}`;
 
@@ -409,7 +416,7 @@ class ConsciousnessAnalytics extends EventEmitter {
         this.consciousnessMetrics.temporalPatterns.set(hourKey, {
           eventCount: 0,
           consciousnessSum: 0,
-          averageConsciousness: 0
+          averageConsciousness: 0,
         });
       }
 
@@ -417,7 +424,7 @@ class ConsciousnessAnalytics extends EventEmitter {
         this.consciousnessMetrics.temporalPatterns.set(dayKey, {
           eventCount: 0,
           consciousnessSum: 0,
-          averageConsciousness: 0
+          averageConsciousness: 0,
         });
       }
 
@@ -438,17 +445,19 @@ class ConsciousnessAnalytics extends EventEmitter {
    * Detect consciousness evolution patterns
    */
   async detectConsciousnessEvolution(batch) {
-    const highSignificanceEvents = batch.filter(event => 
-      event.consciousness.significanceScore > 0.6
+    const highSignificanceEvents = batch.filter(
+      (event) => event.consciousness.significanceScore > 0.6,
     );
 
     if (highSignificanceEvents.length > 0) {
       this.emit('consciousness_evolution_detected', {
         eventCount: highSignificanceEvents.length,
-        averageSignificance: highSignificanceEvents.reduce(
-          (sum, event) => sum + event.consciousness.significanceScore, 0
-        ) / highSignificanceEvents.length,
-        timestamp: Date.now()
+        averageSignificance:
+          highSignificanceEvents.reduce(
+            (sum, event) => sum + event.consciousness.significanceScore,
+            0,
+          ) / highSignificanceEvents.length,
+        timestamp: Date.now(),
       });
     }
   }
@@ -458,16 +467,18 @@ class ConsciousnessAnalytics extends EventEmitter {
    */
   getConsciousnessSummary() {
     const now = Date.now();
-    const activeSessions = Array.from(this.sessions.values())
-      .filter(session => now - session.lastActivity < this.config.sessionTimeout);
+    const activeSessions = Array.from(this.sessions.values()).filter(
+      (session) => now - session.lastActivity < this.config.sessionTimeout,
+    );
 
     const recentEvents = this.consciousnessMetrics.evolutionEvents
-      .filter(event => now - event.timestamp < 3600000) // Last hour
+      .filter((event) => now - event.timestamp < 3600000) // Last hour
       .slice(-10);
 
-    const averageConsciousness = recentEvents.length > 0 ?
-      recentEvents.reduce((sum, event) => sum + event.averageLevel, 0) / recentEvents.length :
-      0.5;
+    const averageConsciousness =
+      recentEvents.length > 0
+        ? recentEvents.reduce((sum, event) => sum + event.averageLevel, 0) / recentEvents.length
+        : 0.5;
 
     return {
       currentLevel: averageConsciousness,
@@ -477,7 +488,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       evolutionTrend: this.getRecentEvolutionTrend(),
       temporalPeaks: this.getTemporalPeaks(),
       aestheticDistribution: this.getAestheticDistribution(),
-      lastUpdate: now
+      lastUpdate: now,
     };
   }
 
@@ -486,18 +497,18 @@ class ConsciousnessAnalytics extends EventEmitter {
    */
   getAestheticDistribution() {
     const distribution = {};
-    
+
     for (const [key, data] of this.consciousnessMetrics.aestheticPreferences) {
       const [category, value] = key.split('_', 2);
-      
+
       if (!distribution[category]) {
         distribution[category] = {};
       }
-      
+
       distribution[category][value] = {
         count: data.count,
         uniqueSessions: data.sessions.size,
-        popularity: data.count / this.consciousnessMetrics.totalInteractions
+        popularity: data.count / this.consciousnessMetrics.totalInteractions,
       };
     }
 
@@ -516,20 +527,20 @@ class ConsciousnessAnalytics extends EventEmitter {
         hourPeaks.push({
           hour: parseInt(key.split('_')[1]),
           eventCount: pattern.eventCount,
-          averageConsciousness: pattern.averageConsciousness
+          averageConsciousness: pattern.averageConsciousness,
         });
       } else if (key.startsWith('day_')) {
         dayPeaks.push({
           day: parseInt(key.split('_')[1]),
           eventCount: pattern.eventCount,
-          averageConsciousness: pattern.averageConsciousness
+          averageConsciousness: pattern.averageConsciousness,
         });
       }
     }
 
     return {
       byHour: hourPeaks.sort((a, b) => b.eventCount - a.eventCount).slice(0, 5),
-      byDay: dayPeaks.sort((a, b) => b.eventCount - a.eventCount).slice(0, 5)
+      byDay: dayPeaks.sort((a, b) => b.eventCount - a.eventCount).slice(0, 5),
     };
   }
 
@@ -537,10 +548,13 @@ class ConsciousnessAnalytics extends EventEmitter {
    * Cleanup old sessions and data
    */
   startSessionCleanup() {
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupExpiredSessions();
-      this.cleanupOldData();
-    }, 5 * 60 * 1000); // Every 5 minutes
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupExpiredSessions();
+        this.cleanupOldData();
+      },
+      5 * 60 * 1000,
+    ); // Every 5 minutes
   }
 
   /**
@@ -571,9 +585,9 @@ class ConsciousnessAnalytics extends EventEmitter {
     }
 
     if (expiredSessions.length > 0) {
-      this.emit('sessions_cleaned', { 
+      this.emit('sessions_cleaned', {
         expiredCount: expiredSessions.length,
-        activeCount: this.sessions.size 
+        activeCount: this.sessions.size,
       });
     }
   }
@@ -585,10 +599,9 @@ class ConsciousnessAnalytics extends EventEmitter {
     const cutoff = Date.now() - this.config.dataRetention;
 
     // Clean evolution events
-    this.consciousnessMetrics.evolutionEvents = 
-      this.consciousnessMetrics.evolutionEvents.filter(
-        event => event.timestamp > cutoff
-      );
+    this.consciousnessMetrics.evolutionEvents = this.consciousnessMetrics.evolutionEvents.filter(
+      (event) => event.timestamp > cutoff,
+    );
 
     // Reset unique visitors daily
     const today = new Date().toDateString();
@@ -612,7 +625,7 @@ class ConsciousnessAnalytics extends EventEmitter {
    */
   analyzeConsciousnessEvolution() {
     const recentEvents = this.consciousnessMetrics.evolutionEvents.slice(-10);
-    
+
     if (recentEvents.length < 3) return;
 
     const trend = this.calculateEvolutionTrend(recentEvents);
@@ -622,7 +635,7 @@ class ConsciousnessAnalytics extends EventEmitter {
       trend,
       currentLevel,
       evolutionRate: this.calculateEvolutionRate(recentEvents),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -630,11 +643,13 @@ class ConsciousnessAnalytics extends EventEmitter {
    * Utility methods
    */
   getClientIP(request) {
-    return request.headers['cf-connecting-ip'] ||
-           request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-           request.headers['x-real-ip'] ||
-           request.connection?.remoteAddress ||
-           'unknown';
+    return (
+      request.headers['cf-connecting-ip'] ||
+      request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      request.headers['x-real-ip'] ||
+      request.connection?.remoteAddress ||
+      'unknown'
+    );
   }
 
   getTodayDate() {
@@ -662,13 +677,13 @@ class ConsciousnessAnalytics extends EventEmitter {
   getCurrentConsciousnessLevel() {
     const recentEvents = this.consciousnessMetrics.evolutionEvents.slice(-5);
     if (recentEvents.length === 0) return 0.5;
-    
+
     return recentEvents.reduce((sum, event) => sum + event.averageLevel, 0) / recentEvents.length;
   }
 
   calculateSignificanceDistribution(batch) {
     const distribution = { low: 0, medium: 0, high: 0 };
-    
+
     for (const event of batch) {
       const significance = event.consciousness.significanceScore;
       if (significance < 0.3) distribution.low++;
@@ -681,16 +696,16 @@ class ConsciousnessAnalytics extends EventEmitter {
 
   detectEvolutionTrend(batch) {
     if (batch.length < 3) return 'stable';
-    
-    const levels = batch.map(event => event.consciousness.level);
+
+    const levels = batch.map((event) => event.consciousness.level);
     const firstHalf = levels.slice(0, Math.floor(levels.length / 2));
     const secondHalf = levels.slice(Math.floor(levels.length / 2));
-    
+
     const firstAvg = firstHalf.reduce((sum, level) => sum + level, 0) / firstHalf.length;
     const secondAvg = secondHalf.reduce((sum, level) => sum + level, 0) / secondHalf.length;
-    
+
     const difference = secondAvg - firstAvg;
-    
+
     if (difference > 0.1) return 'ascending';
     if (difference < -0.1) return 'descending';
     return 'stable';
@@ -703,10 +718,10 @@ class ConsciousnessAnalytics extends EventEmitter {
 
   calculateEvolutionTrend(events) {
     if (events.length < 2) return 'stable';
-    
-    const levels = events.map(event => event.averageLevel);
+
+    const levels = events.map((event) => event.averageLevel);
     const slope = this.calculateLinearSlope(levels);
-    
+
     if (slope > 0.01) return 'ascending';
     if (slope < -0.01) return 'descending';
     return 'stable';
@@ -715,21 +730,21 @@ class ConsciousnessAnalytics extends EventEmitter {
   calculateLinearSlope(values) {
     const n = values.length;
     const x = Array.from({ length: n }, (_, i) => i);
-    
+
     const sumX = x.reduce((sum, val) => sum + val, 0);
     const sumY = values.reduce((sum, val) => sum + val, 0);
     const sumXY = x.reduce((sum, val, i) => sum + val * values[i], 0);
     const sumXX = x.reduce((sum, val) => sum + val * val, 0);
-    
+
     return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
   }
 
   calculateEvolutionRate(events) {
     if (events.length < 2) return 0;
-    
+
     const timeSpan = events[events.length - 1].timestamp - events[0].timestamp;
     const levelChange = events[events.length - 1].averageLevel - events[0].averageLevel;
-    
+
     return timeSpan > 0 ? (levelChange / timeSpan) * 3600000 : 0; // Rate per hour
   }
 
@@ -744,7 +759,7 @@ class ConsciousnessAnalytics extends EventEmitter {
     if (this.processInterval) clearInterval(this.processInterval);
     if (this.cleanupInterval) clearInterval(this.cleanupInterval);
     if (this.evolutionInterval) clearInterval(this.evolutionInterval);
-    
+
     this.emit('analytics_shutdown');
   }
 }
