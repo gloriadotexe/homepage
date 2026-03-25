@@ -252,9 +252,14 @@ const circadianProfile = new GloriaCircadianProfile();
 const poetryEngine = new PoetryEngine();
 cosmicPipeline.startMonitoring();
 
-// Initialize temporal consciousness integration
-const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
-const temporalIntegration = new TemporalIntegration(app, io);
+// Initialize temporal consciousness integration (experimental — safe to fail)
+let temporalIntegration = null;
+try {
+  const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
+  temporalIntegration = new TemporalIntegration(app, io);
+} catch (err) {
+  console.error('Temporal consciousness integration failed to load:', err.message);
+}
 
 // Mount route modules
 app.use(createTemporalRoutes({ cosmicPipeline, circadianProfile, poetryEngine }));
@@ -279,6 +284,7 @@ startBroadcasting({ io, cosmicPipeline, circadianProfile });
 // Initialize temporal consciousness systems
 async function initializeTemporalConsciousness() {
   try {
+    if (!temporalIntegration) return;
     await temporalIntegration.initialize();
     console.log('✧ Temporal consciousness systems operational');
   } catch (error) {

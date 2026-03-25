@@ -4,7 +4,7 @@ const CosmicFeeds = require('../cosmic-data/cosmic-feeds');
 const CircadianAesthetics = require('../circadian/aesthetic-engine');
 const VisitorMemory = require('../persistence/visitor-memory');
 const TemporalEvents = require('../events/temporal-events');
-const TemporalImageSelector = require('../../lib/temporal-image-selector');
+const TemporalImageSelector = require('../../../lib/temporal-image-selector');
 
 class TemporalOrchestrator {
   constructor(io, app) {

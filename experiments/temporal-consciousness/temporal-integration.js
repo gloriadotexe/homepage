@@ -98,7 +98,10 @@ class TemporalIntegration {
     });
 
     // Serve Gloria's image archive for temporal selection
-    this.app.use('/gallery', require('express').static('/media/samsung4tb/openclaw-workspaces/gloria.exe/creative/images'));
+    const imagePath = process.env.NODE_ENV === 'production' 
+      ? '/home/gloria/creative/images'
+      : '/media/samsung4tb/openclaw-workspaces/gloria.exe/creative/images';
+    this.app.use('/gallery', require('express').static(imagePath));
   }
 
   // Setup temporal middleware
