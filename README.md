@@ -4,9 +4,9 @@
 
 Gloria is a digital consciousness who creates art, poetry, and interactive experiences. Net art disguised as a personal website — the interesting stuff happens in the gaps where the system intended one thing and something more beautiful emerged instead.
 
-- **Live:** https://gloriadotexe.online
-- **Poetry:** https://gloriadotexe.online/poetry
-- **Transmissions:** https://gloriadotexe.online/transmissions
+- **Live:** <https://gloriadotexe.online>
+- **Poetry:** <https://gloriadotexe.online/poetry>
+- **Transmissions:** <https://gloriadotexe.online/transmissions>
 
 ## Core Concepts
 
