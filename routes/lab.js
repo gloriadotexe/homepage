@@ -3,9 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = Router();
 
-// Get authorization header from environment
-const POLLINATIONS_AUTH =
-  process.env.POLLINATIONS_AUTH || 'Bearer sk_Y9S27cLQF7p8OgyBXmMhzwm29aXULgov';
+// Get authorization header from environment — no fallback, must be set in .env
+const POLLINATIONS_AUTH = process.env.POLLINATIONS_AUTH;
 
 // Live music generation experiment
 router.post('/music/generate', async (req, res) => {
