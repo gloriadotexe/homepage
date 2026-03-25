@@ -40,7 +40,6 @@ export default [
       'no-useless-escape': 'warn',
       'no-const-assign': 'warn',
       'no-undef': 'warn',
-      'preserve-caught-error': 'off',
     },
   },
 ];
