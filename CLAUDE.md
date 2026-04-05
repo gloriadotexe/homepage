@@ -103,7 +103,7 @@ Deployed at <https://gloriadotexe.online>
 - `POST /users/gloria/inbox` — Receive federation activities
 - `POST /inbox` — Shared inbox
 
-See WEBFINGER_IMPLEMENTATION.md for status and TODOs.
+See ROADMAP.md for status and TODOs.
 
 ### Lab API (routes/lab.js)
 

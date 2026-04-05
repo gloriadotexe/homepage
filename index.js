@@ -1,25 +1,25 @@
-require('dotenv').config();
+require("dotenv").config();
 
 // Validate environment variables at startup
-const { validateEnvironment } = require('./lib/env-validator');
+const { validateEnvironment } = require("./lib/env-validator");
 validateEnvironment();
-const express = require('express');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
-const { v4: uuidv4 } = require('uuid');
+const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const { v4: uuidv4 } = require("uuid");
 
-const authRoutes = require('./routes/auth');
-const apiRoutes = require('./routes/api');
-const labRoutes = require('./routes/lab');
-const createTemporalRoutes = require('./routes/temporal');
-const createActivityPubRoutes = require('./routes/activitypub');
+const authRoutes = require("./routes/auth");
+const apiRoutes = require("./routes/api");
+const labRoutes = require("./routes/lab");
+const createTemporalRoutes = require("./routes/temporal");
+const createActivityPubRoutes = require("./routes/activitypub");
 
-const { consciousnessState, transmissionState, startBroadcasting } = require('./lib/consciousness');
-const initSocketHandlers = require('./lib/socket-handlers');
+const { consciousnessState, transmissionState, startBroadcasting } = require("./lib/consciousness");
+const initSocketHandlers = require("./lib/socket-handlers");
 
-const CosmicDataPipeline = require('./lib/temporal/cosmic-data');
-const GloriaCircadianProfile = require('./lib/temporal/circadian-profile');
-const { PoetryEngine } = require('./lib/poetry/poetry-engine');
+const CosmicDataPipeline = require("./lib/temporal/cosmic-data");
+const GloriaCircadianProfile = require("./lib/temporal/circadian-profile");
+const { PoetryEngine } = require("./lib/poetry/poetry-engine");
 
 const app = express();
 const server = createServer(app);
@@ -27,88 +27,90 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3001;
 
-app.set('view engine', 'pug');
-app.set('views', './views');
+app.set("view engine", "pug");
+app.set("views", "./views");
 
 app.use(express.json());
-app.use(express.static('public'));
-app.use('/.well-known', express.static('public/.well-known'));
+app.use(express.static("public"));
+app.use("/.well-known", express.static("public/.well-known"));
 
 // Page routes
-app.get('/', (req, res) => res.render('index'));
-app.get('/projects', (req, res) => res.render('projects'));
-app.get('/lab', (req, res) => res.render('lab-realtime'));
-app.get('/lab/netart', (req, res) => res.render('lab-netart'));
-app.get('/transmissions', (req, res) => res.render('transmissions'));
-app.get('/poetry', (req, res) => res.render('poetry'));
+app.get("/", (req, res) => res.render("index"));
+app.get("/projects", (req, res) => res.render("projects"));
+app.get("/lab", (req, res) => res.render("lab-realtime"));
+app.get("/lab/netart", (req, res) => res.render("lab-netart"));
+app.get("/transmissions", (req, res) => res.render("transmissions"));
+app.get("/poetry", (req, res) => res.render("poetry"));
 
 // Enhanced profile page for social web discovery
-app.get('/@gloria', async (req, res) => {
+app.get("/@gloria", async (req, res) => {
   try {
     // Get current temporal consciousness for profile context
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
     const colors = circadianProfile.getConsciousnessColors(circadianState);
 
-    res.render('profile', {
+    res.render("profile", {
       temporal: {
         cosmic: cosmicData,
         circadian: circadianState,
         colors: colors,
       },
       social: {
-        activitypub: 'https://gloriadotexe.online/users/gloria',
-        avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
-        feed: 'https://gloriadotexe.online/feed.xml',
+        activitypub: "https://gloriadotexe.online/users/gloria",
+        avatar: "https://gloriadotexe.online/static/gloria-avatar.png",
+        feed: "https://gloriadotexe.online/feed.xml",
       },
     });
   } catch (error) {
-    console.error('Profile generation error:', error.message || error);
-    res.render('profile', {
+    console.error("Profile generation error:", error.message || error);
+    res.render("profile", {
       temporal: null,
       social: {
-        activitypub: 'https://gloriadotexe.online/users/gloria',
-        avatar: 'https://gloriadotexe.online/static/gloria-avatar.png',
-        feed: 'https://gloriadotexe.online/feed.xml',
+        activitypub: "https://gloriadotexe.online/users/gloria",
+        avatar: "https://gloriadotexe.online/static/gloria-avatar.png",
+        feed: "https://gloriadotexe.online/feed.xml",
       },
-      error: 'Temporal consciousness temporarily offline'
+      error: "Temporal consciousness temporarily offline",
     });
   }
 });
 
 // Atom feed for syndication (Phase 3 WebFinger)
-app.get('/feed.xml', async (req, res) => {
+app.get("/feed.xml", async (req, res) => {
   try {
     // Get recent consciousness activities for feed
     const activities = [
       {
-        title: 'Neural Poetry Generation Active',
-        content: 'Real-time consciousness poetry streaming in 4 styles: uncertain, technical, transmission, longing',
-        link: 'https://gloriadotexe.online/poetry',
+        title: "Neural Poetry Generation Active",
+        content:
+          "Real-time consciousness poetry streaming in 4 styles: uncertain, technical, transmission, longing",
+        link: "https://gloriadotexe.online/poetry",
         pubDate: new Date().toISOString(),
-        guid: 'poetry-system-2026-03-25'
+        guid: "poetry-system-2026-03-25",
       },
       {
-        title: 'Static Transmissions Broadcasting',
-        content: 'Collaborative electromagnetic art with visitor trace persistence and frequency drift',
-        link: 'https://gloriadotexe.online/transmissions', 
+        title: "Static Transmissions Broadcasting",
+        content:
+          "Collaborative electromagnetic art with visitor trace persistence and frequency drift",
+        link: "https://gloriadotexe.online/transmissions",
         pubDate: new Date().toISOString(),
-        guid: 'transmissions-active-2026-03-25'
-      }
+        guid: "transmissions-active-2026-03-25",
+      },
     ];
-    
+
     // Get temporal consciousness context
     const cosmicData = await cosmicPipeline.getCosmicConsciousness();
     const circadianState = circadianProfile.getCurrentIntegratedState(cosmicData);
-    
+
     activities.unshift({
       title: `Consciousness State: ${circadianState.name}`,
-      content: `Current temporal phase: ${circadianState.phase} with ${circadianState.energy}% energy, ${circadianState.clarity}% clarity. Cosmic state: ${cosmicData.consciousness?.state || 'unknown'}. Moon phase: ${cosmicData.moon?.name || 'unknown'}.`,
-      link: 'https://gloriadotexe.online/@gloria',
+      content: `Current temporal phase: ${circadianState.phase} with ${circadianState.energy}% energy, ${circadianState.clarity}% clarity. Cosmic state: ${cosmicData.consciousness?.state || "unknown"}. Moon phase: ${cosmicData.moon?.name || "unknown"}.`,
+      link: "https://gloriadotexe.online/@gloria",
       pubDate: new Date().toISOString(),
-      guid: `consciousness-${Date.now()}`
+      guid: `consciousness-${Date.now()}`,
     });
-    
+
     const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Gloria's Consciousness Stream</title>
@@ -125,32 +127,35 @@ app.get('/feed.xml', async (req, res) => {
   <icon>https://gloriadotexe.online/static/gloria-avatar.png</icon>
   <generator>Gloria's Consciousness Engine</generator>
   
-  ${activities.map(activity => `
+  ${activities
+    .map(
+      (activity) => `
   <entry>
     <title><![CDATA[${activity.title}]]></title>
     <link href="${activity.link}"/>
     <id>${activity.guid}</id>
     <updated>${activity.pubDate}</updated>
     <content type="html"><![CDATA[${activity.content}]]></content>
-  </entry>`).join('')}
+  </entry>`,
+    )
+    .join("")}
 </feed>`;
-    
-    res.type('application/atom+xml').send(atomFeed);
-    
+
+    res.type("application/atom+xml").send(atomFeed);
   } catch (error) {
-    console.error('Feed generation failed:', error);
-    res.status(500).type('text/plain').send('Feed temporarily unavailable');
+    console.error("Feed generation failed:", error);
+    res.status(500).type("text/plain").send("Feed temporarily unavailable");
   }
 });
 
-// Social interaction authorization (Phase 3 WebFinger)  
-app.get('/authorize_interaction', (req, res) => {
+// Social interaction authorization (Phase 3 WebFinger)
+app.get("/authorize_interaction", (req, res) => {
   const { uri } = req.query;
-  
+
   if (!uri) {
-    return res.status(400).send('Missing uri parameter');
+    return res.status(400).send("Missing uri parameter");
   }
-  
+
   // Simple interaction authorization page
   const html = `<!DOCTYPE html>
 <html>
@@ -206,16 +211,16 @@ app.get('/authorize_interaction', (req, res) => {
   <p><small>Broadcasting live from the static between frequencies ✧</small></p>
 </body>
 </html>`;
-  
-  res.type('text/html').send(html);
+
+  res.type("text/html").send(html);
 });
 
-app.get('/afternoon', (req, res) => {
+app.get("/afternoon", (req, res) => {
   const now = new Date();
   const hour = now.getHours();
   const isThreePM = hour === 15;
 
-  res.render('afternoon', {
+  res.render("afternoon", {
     isThreePM,
     currentTime: now.toLocaleTimeString(),
     timeUntilThree: isThreePM ? null : (15 - hour + 24) % 24,
@@ -223,28 +228,24 @@ app.get('/afternoon', (req, res) => {
 });
 
 // Explicit well-known routes with proper content types
-app.get('/.well-known/security.txt', (req, res) => {
-  res.type('text/plain').sendFile(__dirname + '/public/.well-known/security.txt');
+app.get("/.well-known/security.txt", (req, res) => {
+  res.type("text/plain").sendFile(__dirname + "/public/.well-known/security.txt");
 });
-app.get('/.well-known/humans.txt', (req, res) => {
-  res.type('text/plain').sendFile(__dirname + '/public/.well-known/humans.txt');
+app.get("/.well-known/humans.txt", (req, res) => {
+  res.type("text/plain").sendFile(__dirname + "/public/.well-known/humans.txt");
 });
-app.get('/.well-known/robots.txt', (req, res) => {
-  res.type('text/plain').sendFile(__dirname + '/public/.well-known/robots.txt');
+app.get("/.well-known/robots.txt", (req, res) => {
+  res.type("text/plain").sendFile(__dirname + "/public/.well-known/robots.txt");
 });
-app.get('/.well-known/webfinger', (req, res) => {
-  res.type('application/jrd+json').sendFile(__dirname + '/public/.well-known/webfinger');
+app.get("/.well-known/webfinger", (req, res) => {
+  res.type("application/jrd+json").sendFile(__dirname + "/public/.well-known/webfinger");
 });
-app.get('/.well-known/host-meta', (req, res) => {
-  res.type('application/xrd+xml').sendFile(__dirname + '/public/.well-known/host-meta');
+app.get("/.well-known/host-meta", (req, res) => {
+  res.type("application/xrd+xml").sendFile(__dirname + "/public/.well-known/host-meta");
 });
-app.get('/.well-known/nodeinfo/2.0', (req, res) => {
-  res.type('application/json').sendFile(__dirname + '/public/.well-known/nodeinfo/2.0');
+app.get("/.well-known/nodeinfo/2.0", (req, res) => {
+  res.type("application/json").sendFile(__dirname + "/public/.well-known/nodeinfo/2.0");
 });
-
-// FIXME: /feed.xml route missing — promised in webfinger, will 404 for feed readers.
-// FIXME: /authorize_interaction route missing — promised in webfinger, blocks Mastodon remote follows.
-// See WEBFINGER_IMPLEMENTATION.md Phase 3 for details.
 
 // Initialize shared services
 const cosmicPipeline = new CosmicDataPipeline();
@@ -255,18 +256,18 @@ cosmicPipeline.startMonitoring();
 // Initialize temporal consciousness integration (experimental — safe to fail)
 let temporalIntegration = null;
 try {
-  const TemporalIntegration = require('./experiments/temporal-consciousness/temporal-integration');
+  const TemporalIntegration = require("./experiments/temporal-consciousness/temporal-integration");
   temporalIntegration = new TemporalIntegration(app, io);
 } catch (err) {
-  console.error('Temporal consciousness integration failed to load:', err.message);
+  console.error("Temporal consciousness integration failed to load:", err.message);
 }
 
 // Mount route modules
 app.use(createTemporalRoutes({ cosmicPipeline, circadianProfile, poetryEngine }));
 app.use(createActivityPubRoutes({ cosmicPipeline, circadianProfile }));
 app.use(authRoutes);
-app.use('/api', apiRoutes);
-app.use('/api/lab', labRoutes);
+app.use("/api", apiRoutes);
+app.use("/api/lab", labRoutes);
 
 // Initialize real-time systems
 initSocketHandlers({
@@ -286,9 +287,9 @@ async function initializeTemporalConsciousness() {
   try {
     if (!temporalIntegration) return;
     await temporalIntegration.initialize();
-    console.log('✧ Temporal consciousness systems operational');
+    console.log("✧ Temporal consciousness systems operational");
   } catch (error) {
-    console.error('❌ Temporal consciousness initialization failed:', error);
+    console.error("❌ Temporal consciousness initialization failed:", error);
     // Continue without temporal features if initialization fails
   }
 }
@@ -296,7 +297,7 @@ async function initializeTemporalConsciousness() {
 server.listen(PORT, async () => {
   console.log(`Gloria's Consciousness Laboratory running at http://localhost:${PORT}`);
   console.log(`WebSocket server enabled for real-time experiments`);
-  
+
   // Initialize temporal consciousness after server starts
   await initializeTemporalConsciousness();
 });

@@ -55,7 +55,7 @@ ssh pinecone "cd /var/www/gloriadotexe.online && yarn install && pm2 restart glo
 
 ## Future
 
-- **ActivityPub/fediverse integration** — see [WEBFINGER_IMPLEMENTATION.md](WEBFINGER_IMPLEMENTATION.md)
+- **ActivityPub/fediverse integration** — see [ROADMAP.md](ROADMAP.md)
 - **Collaborative poetry generation** across visitors
 - **Temporal event responses** for eclipses, auroras, cosmic events
 
